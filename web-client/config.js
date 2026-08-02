@@ -1,6 +1,6 @@
 // WebSocket server URL
 const API_URL_DEVELOPMENT = "ws://localhost:8000";
-const API_URL_PRODUCTION = "wss://pokerpocket-wss.nitramite.com";
+const API_URL_PRODUCTION = "wss://poker-pocket-backend-production.up.railway.app";
 
 // UI settings
 const LS_MODE_TOGGLE_STATE = "LS_MODE_TOGGLE_STATE";

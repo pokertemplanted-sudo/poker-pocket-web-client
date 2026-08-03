@@ -58,6 +58,20 @@ function selectRoom() {
   }
 }
 
+// Player chose a specific seat number and a buy-in amount for that table
+function selectSeat(seatIndex, buyIn) {
+  if (checkSocketStatus()) {
+    webSocket.send(JSON.stringify({
+      "connectionId": CONNECTION_ID,
+      "socketKey": SOCKET_KEY,
+      "key": "selectSeat",
+      "roomId": ROOM_ID,
+      "seatIndex": seatIndex,
+      "buyIn": buyIn
+    }))
+  }
+}
+
 function getSpectateRooms() {
   if (checkSocketStatus()) {
     if (ROOM_ID == -1) {
@@ -323,15 +337,21 @@ function onMessageHandler(jsonData) {
     case "getPlayerChartDataResult":
       getPlayerChartDataResult(jsonData.data);
       break;
+    case "selectSeatResult":
+      selectSeatResult(jsonData.data);
+      break;
   }
 }
 
 // ----------------------------------------------------
 // Parse outputs
 
+var lastRoomsData = []; // keep last getRooms payload so we can read freeSeats/buyIn when a room is clicked
+
 function parseRooms(rData, isSpectateMode) {
-  // Example: {"key":"getRooms","data":[{"roomId":0,"roomName":"Room 0","playerCount":0,"maxSeats":6},{"roomId":1,"roomName":"Room 1","playerCount":0,"maxSeats":6},{"roomId":2,"roomName":"Room 2","playerCount":0,"maxSeats":6}]}
+  // Example: {"key":"getRooms","data":[{"roomId":0,"roomName":"Room 0","playerCount":0,"maxSeats":7,"buyInMin":200,"buyInMax":2000,"freeSeats":[0,1,2,3,4,5,6]}]}
   console.log(JSON.stringify(rData));
+  lastRoomsData = rData;
   var selectModalTitle = document.getElementById('SelectModalLabel');
   isSpectateMode ? selectModalTitle.innerHTML = 'Select room to spectate' : selectModalTitle.innerHTML = 'Select room';
   document.getElementById('roomListGroup').innerHTML = '';
@@ -354,21 +374,91 @@ function parseRooms(rData, isSpectateMode) {
     ROOM_ID = Number($(this).attr("id"));
     if (ROOM_ID !== void 0) {
       $('#selectRoomModal').modal('hide');
-      isSpectateMode ? selectSpectateRoom() : selectRoom();
+      if (isSpectateMode) {
+        selectSpectateRoom();
+      } else {
+        openSeatPicker(ROOM_ID);
+      }
     }
   });
+}
+
+// ----------------------------------------------------
+// Seat + buy-in picker (shown after choosing a table, before choosing selectSpectateRoom)
+
+function openSeatPicker(roomId) {
+  var roomData = null;
+  for (var i = 0; i < lastRoomsData.length; i++) {
+    if (Number(lastRoomsData[i].roomId) === roomId) {
+      roomData = lastRoomsData[i];
+      break;
+    }
+  }
+  if (!roomData) {
+    return;
+  }
+  var freeSeats = roomData.freeSeats || [];
+  var buyInMin = roomData.buyInMin || roomData.roomMinBet * 20;
+  var buyInMax = roomData.buyInMax || roomData.roomMinBet * 200;
+
+  var $seatGrid = $('#seatPickerGrid');
+  $seatGrid.empty();
+  var totalSeats = roomData.maxSeats || 7;
+  for (var s = 0; s < totalSeats; s++) {
+    var isFree = freeSeats.indexOf(s) !== -1;
+    $seatGrid.append(
+      "<button type='button' class='btn " + (isFree ? "btn-outline-success" : "btn-secondary") + " seatPickerBtn' " +
+      "data-seat='" + s + "' " + (isFree ? "" : "disabled") + " style='margin:4px; width:70px;'>" +
+      "Seat " + (s + 1) +
+      "</button>"
+    );
+  }
+  $('#seatPickerBuyIn').attr('min', buyInMin).attr('max', buyInMax).val(buyInMin);
+  $('#seatPickerBuyInRange').text(buyInMin + '$ - ' + buyInMax + '$');
+  $('#seatPickerError').text('');
+  var selectedSeat = null;
+  $('.seatPickerBtn').click(function () {
+    $('.seatPickerBtn').removeClass('btn-primary').filter(function () {
+      return !$(this).is(':disabled');
+    }).addClass('btn-outline-success');
+    $(this).removeClass('btn-outline-success').addClass('btn-primary');
+    selectedSeat = Number($(this).attr('data-seat'));
+  });
+  $('#seatPickerConfirmBtn').off('click').on('click', function () {
+    var buyIn = Number($('#seatPickerBuyIn').val());
+    if (selectedSeat === null) {
+      $('#seatPickerError').text('Choose a seat first.');
+      return;
+    }
+    if (isNaN(buyIn) || buyIn < buyInMin || buyIn > buyInMax) {
+      $('#seatPickerError').text('Buy-in must be between ' + buyInMin + '$ and ' + buyInMax + '$.');
+      return;
+    }
+    $('#seatPickerModal').modal('hide');
+    selectSeat(selectedSeat, buyIn);
+  });
+  $('#seatPickerModal').modal('show');
+}
+
+// Server confirms whether the seat + buy-in were accepted
+function selectSeatResult(data) {
+  if (!data.result) {
+    toastr["error"](data.reason || "Could not sit at that seat.");
+    ROOM_ID = -1;
+    $('#selectRoomModal').modal('show');
+    getRooms("all");
+  }
 }
 
 // ----------------------------------------------------
 // Room parameters
 
 function roomParameters(rData) {
-  // Example: {"playerCount":3,"roomMinBet":10,"middleCards":["Q♠","6♦","9♠","4♠"],"playersData":[{"playerId":0,"playerName":"Bot362","playerMoney":6462.5,"isDealer":false},{"playerId":1,"playerName":"Bot265","playerMoney":9902.5,"isDealer":false},{"playerId":2,"playerName":"Bot966","playerMoney":13500,"isDealer":true}]}
+  // Example: {"playerCount":3,"roomMinBet":10,"maxSeats":7,"middleCards":[...],"playersData":[{"playerId":0,"playerName":"Bot362","playerMoney":6462.5,"isDealer":false,"seatIndex":2}]}
   console.log("Room params: " + JSON.stringify(rData));
   initRoom();
   initSeats();
   getLoggedInUserStatistics(); // Added so refreshing xp needed counter updates automatically
-  var playerCount = rData.playerCount;
   room.setMinBet(rData.roomMinBet);
   var gameStarted = rData.gameStarted;
   if (rData.middleCards.length > 0) {
@@ -377,44 +467,19 @@ function roomParameters(rData) {
       room.setMiddleCard(m, gameStarted);
     }
   }
-  var playerIds = [], playerNames = [], playerMoneys = [], playerIsDealer = [];
-  for (var i = 0; i < rData.playersData.length; i++) {
-    playerIds.push(Number(rData.playersData[i].playerId));
-    playerNames.push(rData.playersData[i].playerName);
-    playerMoneys.push(Number(rData.playersData[i].playerMoney));
-    playerIsDealer.push(rData.playersData[i].isDealer);
-  }
-  switch (playerCount) {
-    case 1:
-      giveSeats(playerCount, [0], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-    case 2:
-      giveSeats(playerCount, [0, 3], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-    case 3:
-      giveSeats(playerCount, [0, 2, 3], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-    case 4:
-      giveSeats(playerCount, [0, 2, 3, 5], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-    case 5:
-      giveSeats(playerCount, [0, 1, 2, 3, 5], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-    case 6:
-      giveSeats(playerCount, [0, 1, 2, 3, 4, 5, 6], playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted);
-      break;
-  }
-}
-
-function giveSeats(playerCount, seatPositions, playerIds, playerNames, playerMoneys, playerIsDealer, gameStarted) {
   players = []; // initialize array
-  for (var i = 0; i < playerCount; i++) {
-    players.push(new Player(
-      seats[seatPositions[i]], playerIds[i], playerNames[i], playerMoneys[i]
-    ));
-    players[i].initPlayer(gameStarted);
-    if (playerIsDealer[i] === true) {
-      players[i].setPlayerAsDealer();
+  for (var i = 0; i < rData.playersData.length; i++) {
+    var pd = rData.playersData[i];
+    // seatIndex comes straight from the server (fixed seat number 0..maxSeats-1);
+    // fall back to array position only for compatibility with an older server.
+    var seatPos = (pd.seatIndex !== undefined && pd.seatIndex !== null && pd.seatIndex >= 0) ? pd.seatIndex : i;
+    if (seats[seatPos] === undefined) {
+      continue; // safety: ignore out-of-range seats rather than crash
+    }
+    players.push(new Player(seats[seatPos], Number(pd.playerId), pd.playerName, Number(pd.playerMoney)));
+    players[players.length - 1].initPlayer(gameStarted);
+    if (pd.isDealer === true) {
+      players[players.length - 1].setPlayerAsDealer();
     }
   }
 }

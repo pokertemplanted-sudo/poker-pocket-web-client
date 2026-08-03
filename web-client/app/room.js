@@ -208,6 +208,7 @@ function setupSeats() {
   seats.push(new Seat('s4SeatFrame', 's4c0', 's4c1', 's4CardView', 's4Name', 's4Money', 's4TimeBar', 's4BetFrame', 's4TotalBet', 's4ActionFrame', 's4LastActionText', 's4DealerChip')); // 4
   seats.push(new Seat('s5SeatFrame', 's5c0', 's5c1', 's5CardView', 's5Name', 's5Money', 's5TimeBar', 's5BetFrame', 's5TotalBet', 's5ActionFrame', 's5LastActionText', 's5DealerChip')); // 5
   seats.push(new Seat('s6SeatFrame', 's6c0', 's6c1', 's6CardView', 's6Name', 's6Money', 's6TimeBar', 's6BetFrame', 's6TotalBet', 's6ActionFrame', 's6LastActionText', 's6DealerChip')); // 6
+  seats.push(new Seat('s7SeatFrame', 's7c0', 's7c1', 's7CardView', 's7Name', 's7Money', 's7TimeBar', 's7BetFrame', 's7TotalBet', 's7ActionFrame', 's7LastActionText', 's7DealerChip')); // 7
   initSeats();
 }
 

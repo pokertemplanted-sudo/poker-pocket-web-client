@@ -538,6 +538,7 @@ function statusUpdate(sData) {
   //console.log(JSON.stringify(sData));
   var i = 0;
   room.setTotalPot(sData.totalPot);
+  window.currentTotalPot = Number(sData.totalPot) || 0; // used by pot-fraction raise shortcuts
   room.setRoomStatusText(sData.currentStatus);
   room.setRoomName(sData.roomName);
   room.setRoomSpectatorCount(sData.spectatorsCount);

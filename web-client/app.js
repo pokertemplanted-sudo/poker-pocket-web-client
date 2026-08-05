@@ -121,6 +121,49 @@ function betAllInClick() {
   raiseHelper(0, true);
 }
 
+// Atajos de pot: fijan el monto exacto a apostar (no suman como +10/+25/etc),
+// tapeado al maximo de fichas del jugador. No envian la apuesta, solo dejan
+// el monto cargado para que el jugador confirme con "Raise".
+function potFractionClick(fraction) {
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
+      var pot = Number(window.currentTotalPot) || 0;
+      var maxAvailable = players[i].playerMoney + players[i].tempBet; // fichas disponibles para esta apuesta
+      var amount = Math.floor(pot * fraction);
+      if (amount > maxAvailable) {
+        amount = maxAvailable; // guardia de seguridad: nunca mas que el saldo (all-in)
+      }
+      if (amount < 0) {
+        amount = 0;
+      }
+      players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
+      players[i].playerMoney = maxAvailable - amount;
+      players[i].tempBet = amount;
+      players[i].setPlayerMoney(players[i].playerMoney);
+      players[i].setPlayerTotalBet(players[i].playerTotalBet);
+      if (amount >= maxAvailable && maxAvailable > 0) {
+        toastr["info"]("All-in (saldo insuficiente para " + Math.round(fraction * 100) + "% del pot)");
+      }
+    }
+  }
+}
+
+function potThirdClick() {
+  potFractionClick(1 / 3);
+}
+
+function potHalfClick() {
+  potFractionClick(1 / 2);
+}
+
+function potThreeQuarterClick() {
+  potFractionClick(3 / 4);
+}
+
+function potFullClick() {
+  potFractionClick(1);
+}
+
 function raiseHelper(amount, allIn) {
   for (var i = 0; i < players.length; i++) {
     if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn && Number(players[i].playerMoney) > 0) {

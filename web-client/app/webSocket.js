@@ -5,6 +5,7 @@ var ROOM_ID = -1;
 var webSocket = null;
 var showRoomsModal = true;
 var actionButtonsEnabled = false;
+var actionButtonsSafetyTimer = null; // set by app.js's disableActionButtons(), cleared here once the server confirms the turn changed
 var autoPlay = false; // Set true makes logged in player play automatically
 var autoPlayCommandRequested = false;
 
@@ -578,6 +579,13 @@ function statusUpdate(sData) {
     if (Number(pId) == Number(CONNECTION_ID)) {
       player.setPlayerTurn(pTurn, sData.isCallSituation);
       actionButtonsEnabled = true;
+      if (typeof enableActionButtons === 'function') {
+        enableActionButtons(); // re-enable the DOM buttons dimmed/disabled on click, server confirmed the turn changed
+      }
+      if (actionButtonsSafetyTimer) {
+        clearTimeout(actionButtonsSafetyTimer); // server responded in time, no need for the 1s fallback anymore
+        actionButtonsSafetyTimer = null;
+      }
       if (pTurn && autoPlay && !autoPlayCommandRequested) {
         getAutoPlayAction();
       }

@@ -27,7 +27,6 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <link href="app.css" rel="stylesheet">
-    <link href="stake-theme.css" rel="stylesheet">
     <script async src="https://analytics.nitramite.com/script.js" data-website-id="c16175b4-93df-47e1-9b69-9281be276972"></script>
 
 </head>
@@ -42,13 +41,13 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto mt-1 mt-md-0">
-            <button class="btn btn-sm align-middle btn-outline-light" role="button" onclick="$('#selectRoomModal').modal('show'); getRooms('all');" type="button" style="margin-right: 5px;">Get rooms</button>
-            <button class="btn btn-sm align-middle btn-outline-light" role="button" onclick="$('#selectRoomModal').modal('show'); getSpectateRooms();" type="button" style="margin-right: 5px;">Spectate</button>
-            <button class="btn btn-sm align-middle btn-outline-light" role="button" onclick="$('#rankingsModal').modal('show'); getRankings();" type="button" style="margin-right: 5px;">Rankings</button>
-            <button class="btn btn-sm align-middle btn-outline-light" role="button" onclick="getGameInformation()" type="button" style="margin-right: 5px;">Server</button>
-            <button class="btn btn-sm align-middle btn-outline-light" role="button" type="button" data-toggle="modal" data-target="#cmdModal" style="margin-right: 5px;">Cmd</button>
-            <button id="soundToggleBtn" class="btn btn-sm align-middle btn-outline-light" onclick="toggleSounds()" role="button" type="button" style="margin-right: 5px;">Disable sounds</button>
+        <ul class="navbar-nav mr-auto mt-1 mt-md-0 nav-btn-group">
+            <button class="nav-btn" role="button" onclick="$('#selectRoomModal').modal('show'); getRooms('all');" type="button">Get rooms</button>
+            <button class="nav-btn" role="button" onclick="$('#selectRoomModal').modal('show'); getSpectateRooms();" type="button">Spectate</button>
+            <button class="nav-btn" role="button" onclick="$('#rankingsModal').modal('show'); getRankings();" type="button">Rankings</button>
+            <button class="nav-btn" role="button" onclick="getGameInformation()" type="button">Server</button>
+            <button class="nav-btn" role="button" type="button" data-toggle="modal" data-target="#cmdModal">Cmd</button>
+            <button id="soundToggleBtn" class="nav-btn" onclick="toggleSounds()" role="button" type="button">Disable sounds</button>
         </ul>
 
         <ul id="loggedInUserIcon" class="nav navbar-nav navbar-right" onclick="getLoggedInUserStatistics(); $('#userModal').modal('show');">
@@ -221,54 +220,40 @@
 
 <!-- Select room modal -->
 <div class="modal fade" id="selectRoomModal" tabindex="-1" role="dialog" aria-labelledby="SelectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content lobby-modal">
-            <div class="modal-header lobby-header">
-                <div class="lobby-header-left">
-                    <div class="lobby-avatar">♠</div>
-                    <div>
-                        <div class="lobby-username" id="lobbyUsername">Player</div>
-                        <div class="lobby-status"><span class="lobby-status-dot"></span>En línea</div>
-                    </div>
-                </div>
-                <div class="lobby-header-right">
-                    <div class="lobby-balance" id="lobbyBalance">-- fichas</div>
-                    <button type="button" class="lobby-recharge-btn" title="La recarga de fichas todavia no esta conectada a un sistema de banca real -- por ahora las fichas se compran al sentarte en una mesa (buy-in)." onclick="toastr['info']('La recarga todavia no esta conectada a un sistema de banca. Por ahora, elegis tus fichas al sentarte en una mesa (buy-in).');">+ Recargar</button>
-                </div>
-                <button type="button" class="close lobby-close" data-dismiss="modal" aria-label="Close">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SelectModalLabel">Select room</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body lobby-body">
-                <div class="lobby-banner">
-                    <div class="lobby-banner-title">Bienvenido a Dust to Glory Poker</div>
-                    <div class="lobby-banner-subtitle">Elegí tu mesa y sentate a jugar Texas Hold'em en tiempo real.</div>
-                </div>
-
-                <div class="lobby-tabs">
-                    <button type="button" class="lobby-tab lobby-tab-active" id="tabHoldem">Texas Hold'em</button>
-                    <button type="button" class="lobby-tab lobby-tab-disabled" id="tabOmaha" disabled>
-                        Omaha <span class="lobby-soon-badge">PRONTO</span>
-                    </button>
-                </div>
-
-                <div class="lobby-filters" id="lobbyFilters">
-                    <button type="button" id="allRB" class="lobby-pill lobby-pill-active">Todas</button>
-                    <button type="button" id="lowRB" class="lobby-pill">Low</button>
-                    <button type="button" id="mediumRB" class="lobby-pill">Mid</button>
-                    <button type="button" id="highRB" class="lobby-pill">VIP</button>
-                </div>
-
-                <p class="lobby-mode-row">
-                    <button type="button" onclick="getRooms(currentRoomFilter || 'all'); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d btn-sm">Playing rooms</button>
-                    <button type="button" onclick="getSpectateRooms(); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-default btn3d btn-sm">Spectate rooms</button>
+            <div class="modal-body">
+                <p>
+                    <button type="button" onclick="getRooms('all'); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d">Playing rooms</button>
+                    <button type="button" onclick="getSpectateRooms(); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-default btn3d">Spectate rooms</button>
                 </p>
-
-                <div id="room-list-container">
-                    <!-- Dynamically appending room cards here from javascript -->
+                <div style="margin-left: 10px; margin-bottom: 5px">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="allRB" name="radio" type="radio" checked="checked" class="custom-control-input">
+                        <label class="custom-control-label" for="allRB">All</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="lowRB" name="radio" type="radio" class="custom-control-input">
+                        <label class="custom-control-label" for="lowRB">Low bets</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="mediumRB" name="radio" type="radio" class="custom-control-input">
+                        <label class="custom-control-label" for="mediumRB">Medium bets</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="highRB" name="radio" type="radio" class="custom-control-input">
+                        <label class="custom-control-label" for="highRB">High bets</label>
+                    </div>
                 </div>
-                <!-- Kept for backward compatibility with any code still referencing the old id; unused visually -->
-                <div id="roomListGroup" style="display:none;"></div>
+                <div id="roomListGroup" class="list-group">
+                    <!-- Dynamically appending here from javascript -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -413,27 +398,27 @@
 <div class="container" style="min-width: 850px; width: 850px; margin-top: 5px">
 
 
-    <div class="card" style="background-color: #434343; width: 100%; padding-top: 5px; padding-bottom: 5px;">
+    <div class="card status-bar">
 
         <!-- Room status -->
         <div class="row">
             <div class="col-10">
                 <div class="container">
-                    <div class="row">
+                    <div class="row status-bar__stats">
                         <div class="col-sm">
-                            <div id="roomName" style="color: #FFFFFF; font-size: 14px;">♦ Default room</div>
+                            <div id="roomName" class="status-stat"><span class="status-stat__label">Room</span><span class="status-stat__value">Default room</span></div>
                         </div>
                         <div class="col-sm">
-                            <div id="spectatorsCount" style="color: #FFFFFF; font-size: 12px;">♦ Spectating: 0</div>
+                            <div id="spectatorsCount" class="status-stat"><span class="status-stat__label">Spectating</span><span class="status-stat__value">0</span></div>
                         </div>
                         <div class="col-sm">
-                            <div id="waitingPlayersCount" style="color: #FFFFFF; font-size: 12px;">♦ Waiting: 0</div>
+                            <div id="waitingPlayersCount" class="status-stat"><span class="status-stat__label">Waiting</span><span class="status-stat__value">0</span></div>
                         </div>
                         <div class="col-sm">
-                            <div id="deckStatus" style="color: #FFFFFF; font-size: 12px;">♦ Deck: -</div>
+                            <div id="deckStatus" class="status-stat"><span class="status-stat__label">Deck</span><span class="status-stat__value">-</span></div>
                         </div>
                         <div class="col-sm">
-                            <div id="deckCardsBurned" style="color: #FFFFFF; font-size: 12px;">♦ Burned: -</div>
+                            <div id="deckCardsBurned" class="status-stat"><span class="status-stat__label">Burned</span><span class="status-stat__value">-</span></div>
                         </div>
                     </div>
                 </div>
@@ -760,13 +745,6 @@
                     <button onclick="betAllInClick()" type="button" class="btn btn-danger">All in</button>
                 </div>
                 <div class="col">
-                    <div id="potShortcuts" style="display:flex; gap:6px; margin-bottom:6px;">
-                        <button onclick="minRaiseClick()" type="button" class="potShortcutBtn">Min</button>
-                        <button onclick="potThirdClick()" type="button" class="potShortcutBtn">1/3 Pot</button>
-                        <button onclick="potHalfClick()" type="button" class="potShortcutBtn">1/2 Pot</button>
-                        <button onclick="potThreeQuarterClick()" type="button" class="potShortcutBtn">3/4 Pot</button>
-                        <button onclick="potFullClick()" type="button" class="potShortcutBtn">Pot</button>
-                    </div>
                     <button onclick="foldBtnClick()" id="foldBtn" type="button" class="btn btn-danger">Fold</button>
                     <button onclick="checkBtnClick()" id="checkBtn" type="button" class="btn btn-danger">Check</button>
                     <button onclick="raiseBtnClick()" id="raiseBtn" type="button" class="btn btn-danger">Raise</button>
@@ -776,50 +754,28 @@
     </div>
 
 
-    <!-- Copyright & badge -->
+    <!-- Toggles bar -->
     <div class="container" style="min-width: 850px;">
-        <div class="row">
-            <div class="col-4">
-                <footer class="footer">
-                    <div style="color: #FFFFFF;">♣ ♦ ♥ ♠</div>
-                    <div style="color: #FFFFFF">&copy; Nitramite 2017 - MK</div>
-                    <div style="color: #FFFFFF">Graphics Raphael Ciribelly</div>
-                </footer>
+        <div class="toggle-bar">
+            <div class="toggle-item">
+                <div class="toggle-label">Purple table</div>
+                <input type="checkbox" name="purple-table-mode-toggle" data-on-color="danger" data-off-color="danger"
+                       data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
             </div>
-            <div class="col" style="margin-top: 10px">
-                <div style="color: #ffffff; margin-left: -20px; font-size: 13px">Purple table</div>
-                <div class="row">
-                    <input type="checkbox" name="purple-table-mode-toggle" data-on-color="danger" data-off-color="danger"
-                           data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
-                </div>
+            <div class="toggle-item">
+                <div class="toggle-label">Black cards</div>
+                <input type="checkbox" name="black-cards-mode-toggle" data-on-color="danger" data-off-color="danger"
+                       data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
             </div>
-            <div class="col" style="margin-top: 10px">
-                <div style="color: #ffffff; margin-left: -20px; font-size: 13px">Black cards</div>
-                <div class="row">
-                    <input type="checkbox" name="black-cards-mode-toggle" data-on-color="danger" data-off-color="danger"
-                           data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
-                </div>
+            <div class="toggle-item">
+                <div class="toggle-label">Auto check</div>
+                <input type="checkbox" name="auto-check-mode-toggle" data-on-color="danger" data-off-color="danger"
+                       data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
             </div>
-            <div class="col" style="margin-top: 10px;" >
-                <div style="color: #ffffff; margin-left: -20px; font-size: 13px;">Auto check</div>
-                <div class="row">
-                    <input type="checkbox" name="auto-check-mode-toggle" data-on-color="danger" data-off-color="danger"
-                           data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
-                </div>
-            </div>
-            <div class="col" style="margin-top: 10px">
-                <div style="color: #ffffff; margin-left: -20px; font-size: 13px">Connection</div>
-                <div class="row">
-                    <input type="checkbox" name="connection-mode-toggle" data-on-color="danger" data-off-color="danger"
-                           data-on-text="Dev" data-off-text="Prod" data-size="small" data-label-width="0">
-                </div>
-            </div>
-            <div class="col-3" style="margin-top: 20px">
-                <div class="row">
-                    <a href="https://play.google.com/store/apps/details?id=com.nitramite.pokerpocket">
-                        <img class="playBadge" src="./assets/images/badge_play.png" alt="Poker Pocket on Google Play">
-                    </a>
-                </div>
+            <div class="toggle-item">
+                <div class="toggle-label">Connection</div>
+                <input type="checkbox" name="connection-mode-toggle" data-on-color="danger" data-off-color="danger"
+                       data-on-text="Dev" data-off-text="Prod" data-size="small" data-label-width="0">
             </div>
         </div>
     </div>

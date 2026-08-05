@@ -511,6 +511,26 @@ async function holeCardsAsync() {
 }
 
 
+// Busca el Player local (cliente) que corresponde a un playerId del servidor.
+// NECESARIO porque sData.playersData (orden interno del servidor para esta
+// mano, rota con el dealer) y el array local `players` (orden en que se
+// fueron sentando, fijo desde que se armó la mesa) NO están garantizados a
+// tener el mismo orden ni el mismo largo entre sí. Indexar por posición
+// (players[i] contra sData.playersData[i]) hacía que, en cuanto los dos
+// órdenes divergían, se llamara a un método sobre `undefined` (asiento
+// vacío o jugador equivocado) -- eso tiraba un error no capturado que
+// cortaba el resto de statusUpdate() a mitad de camino, y la mesa se veía
+// congelada (turno/tiempo/cartas sin actualizar) aunque el servidor
+// siguiera mandando todo correctamente.
+function getPlayerByServerId(pId) {
+  for (var p = 0; p < players.length; p++) {
+    if (players[p] && Number(players[p].playerId) === Number(pId)) {
+      return players[p];
+    }
+  }
+  return null;
+}
+
 // ----------------------------------------------------
 // Status update ({"totalPot":30,"currentStatus":"Betting round 4","middleCards":["2♦","4♥","5♦","A♠","3♠"],"playersData":[{"playerId":1,"playerName":"Anon250","playerMoney":10000,"totalBet":0,"isPlayerTurn":false,"isFold":true,"timeBar":0},{"playerId":2,"playerName":"Anon93","playerMoney":9970,"totalBet":30,"isPlayerTurn":true,"isFold":false,"timeBar":0}],"isCallSituation":false,"isResultsCall":false})
 function statusUpdate(sData) {
@@ -533,22 +553,30 @@ function statusUpdate(sData) {
     var pTimeLeft = sData.playersData[i].timeLeft;
     var pId = sData.playersData[i].playerId;
 
-    players[i].setTimeBar(pTimeLeft);
-    if (Number(pId) == Number(CONNECTION_ID) && players[i].tempBet > 0) {
+    var player = getPlayerByServerId(pId);
+    if (!player) {
+      // Todavía no tenemos un Player local para este playerId (por ejemplo,
+      // el evento de "se sentó" no terminó de procesarse). Nos salteamos
+      // esta entrada en vez de romper el resto de la actualización.
+      continue;
+    }
+
+    player.setTimeBar(pTimeLeft);
+    if (Number(pId) == Number(CONNECTION_ID) && player.tempBet > 0) {
       // Do nothing
     } else {
-      players[i].setPlayerMoney(pMoney);
+      player.setPlayerMoney(pMoney);
       if (sData.collectingPot === false) {
-        players[i].setPlayerTotalBet(pTotalBet);
+        player.setPlayerTotalBet(pTotalBet);
       }
     }
     if (pIsFold) {
-      if (!players[i].isFold) {
-        players[i].setPlayerFold();
+      if (!player.isFold) {
+        player.setPlayerFold();
       }
     }
     if (Number(pId) == Number(CONNECTION_ID)) {
-      players[i].setPlayerTurn(pTurn, sData.isCallSituation);
+      player.setPlayerTurn(pTurn, sData.isCallSituation);
       actionButtonsEnabled = true;
       if (pTurn && autoPlay && !autoPlayCommandRequested) {
         getAutoPlayAction();

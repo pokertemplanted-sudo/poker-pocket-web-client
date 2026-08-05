@@ -1,0 +1,80 @@
+/*
+ * stake-theme.css
+ *
+ * Capa visual nueva, cargada DESPUÉS de app.css en index.html. No modifica
+ * ni un solo id/clase del HTML — solo agrega reglas nuevas que apuntan a
+ * los mismos selectores que ya existen (#foldBtn, #checkBtn, #raiseBtn,
+ * .body), así que gana por orden de cascada sin tocar el markup ni el JS.
+ */
+
+/* Fondo general, estilo Stake */
+.body {
+  background-color: #0F1923 !important;
+  background-image: radial-gradient(circle at 50% 0%, #1A2C38 0%, #0F1923 65%);
+}
+
+/* --- Botones de acción: Fold / Check-Call / Raise --- */
+/* Comparten la clase Bootstrap "btn btn-danger" en el HTML, así que los
+   diferenciamos por id en vez de por clase (no podíamos tocar el HTML). */
+#foldBtn,
+#checkBtn,
+#raiseBtn {
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  outline: none;
+  box-shadow: none;
+  text-shadow: none;
+  transition: all 0.2s ease;
+}
+
+#foldBtn:hover:not(:disabled),
+#checkBtn:hover:not(:disabled),
+#raiseBtn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+#foldBtn:active:not(:disabled),
+#checkBtn:active:not(:disabled),
+#raiseBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+#foldBtn:disabled,
+#checkBtn:disabled,
+#raiseBtn:disabled {
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+/* Fold — rojo vibrante */
+#foldBtn {
+  background-color: #E2234D;
+  color: #FFFFFF;
+}
+#foldBtn:hover:not(:disabled) {
+  background-color: #E2234D;
+  box-shadow: 0 0 12px rgba(226, 35, 77, 0.5);
+}
+
+/* Check / Call — gris-azulado interactivo */
+#checkBtn {
+  background-color: #2F4553;
+  color: #FFFFFF;
+}
+#checkBtn:hover:not(:disabled) {
+  background-color: #2F4553;
+  box-shadow: 0 0 12px rgba(47, 69, 83, 0.7);
+}
+
+/* Raise — verde neón Stake, texto negro */
+#raiseBtn {
+  background-color: #00E701;
+  color: #000000;
+}
+#raiseBtn:hover:not(:disabled) {
+  background-color: #00E701;
+  box-shadow: 0 0 14px rgba(0, 231, 1, 0.6);
+}

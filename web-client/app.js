@@ -35,6 +35,7 @@ function foldBtnClick() {
   if (actionButtonsEnabled) {
     setFold();
     actionButtonsEnabled = false;
+    disableActionButtons();
   }
 }
 
@@ -51,6 +52,7 @@ function checkBtnClick() { // Also handles Call
       }
     }
     actionButtonsEnabled = false;
+    disableActionButtons();
   }
 }
 
@@ -58,7 +60,45 @@ function raiseBtnClick() {
   if (actionButtonsEnabled) {
     setRaise(myRaiseHelper());
     actionButtonsEnabled = false;
+    disableActionButtons();
   }
+}
+
+// Instantly disables + dims the 3 action buttons the moment the player
+// clicks one, so a slow/laggy connection can't make it look like the click
+// "did nothing" and invite a double-click. Also arms a 1s safety-timeout:
+// if the server never sends back a statusUpdate confirming the turn moved
+// on (dropped packet, brief disconnect, etc.), the buttons re-enable
+// themselves instead of leaving the player stuck unable to act.
+function disableActionButtons() {
+  ['foldBtn', 'checkBtn', 'raiseBtn'].forEach(function (id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+    }
+  });
+  if (actionButtonsSafetyTimer) {
+    clearTimeout(actionButtonsSafetyTimer);
+  }
+  actionButtonsSafetyTimer = setTimeout(function () {
+    actionButtonsEnabled = true;
+    enableActionButtons();
+    actionButtonsSafetyTimer = null;
+  }, 1000);
+}
+
+// Re-enables + un-dims the 3 action buttons. Called both by the safety
+// timeout above and by webSocket.js the moment the server actually
+// confirms this player's turn (the normal, non-timeout path).
+function enableActionButtons() {
+  ['foldBtn', 'checkBtn', 'raiseBtn'].forEach(function (id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '';
+    }
+  });
 }
 
 function betTenClick() {

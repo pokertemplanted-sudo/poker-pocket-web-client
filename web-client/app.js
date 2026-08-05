@@ -1,5 +1,5 @@
 /* Require components */
-var mode = true;
+var mode = false; // false = Producción (Railway). El toggle "Connection" en la UI lo puede pasar a Dev manualmente si algún día se prueba en local.
 var autoCheckInterval = null;
 var playerNickname = "Anon" + Math.floor(Math.random() * 1000);
 var room = new Room();
@@ -241,7 +241,7 @@ function forgotPasswordBtn() {
 
 // Init's settings buttons and listeners
 function initSettingButtons() {
-  if (localStorage.getItem(LS_MODE_TOGGLE_STATE) !== 'null') {
+  if (localStorage.getItem(LS_MODE_TOGGLE_STATE) !== null) {
     mode = localStorage.getItem(LS_MODE_TOGGLE_STATE) === 'true';
   }
   $("[name='connection-mode-toggle']").bootstrapSwitch('state', mode, true);

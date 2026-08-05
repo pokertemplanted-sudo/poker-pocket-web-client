@@ -1,5 +1,5 @@
 /* Require components */
-var mode = false; // false = Producción (Railway). El toggle "Connection" en la UI lo puede pasar a Dev manualmente si algún día se prueba en local.
+var mode = false; // false = Producción (Railway). El toggle "Connection" en la UI lo puede pasar a Dev manualmente.
 var autoCheckInterval = null;
 var playerNickname = "Anon" + Math.floor(Math.random() * 1000);
 var room = new Room();
@@ -25,6 +25,21 @@ function startApp() {
     document.addEventListener('keyup', keyCommands, false);
     //debugCheck();
   }
+}
+
+// Vistas separadas Lobby/Mesa: oculta la mesa y vuelve a mostrar el modal
+// del lobby. El "mostrar mesa" pasa en webSocket.js, en el punto donde ya
+// se confirma que el jugador se sentó (selectSeat) — acá solo el camino
+// inverso, para el botón "Volver al Lobby".
+function backToLobby() {
+  var tableView = document.getElementById('tableView');
+  if (tableView) {
+    tableView.classList.remove('view-active');
+    tableView.classList.add('view-hidden');
+  }
+  ROOM_ID = -1;
+  $('#selectRoomModal').modal('show');
+  getRooms(currentRoomFilter || 'all');
 }
 
 
@@ -162,6 +177,30 @@ function potThreeQuarterClick() {
 
 function potFullClick() {
   potFractionClick(1);
+}
+
+// Slider vertical (mobile): mapea 0-100% a 0..maxAvailable fichas, mismo
+// patrón de seguridad que potFractionClick — solo carga tempBet, nunca
+// envía la apuesta por si solo (eso lo sigue haciendo el botón Raise).
+function raiseSliderInput(sliderValue) {
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
+      var maxAvailable = players[i].playerMoney + players[i].tempBet;
+      var pct = Math.max(0, Math.min(100, Number(sliderValue))) / 100;
+      var amount = Math.floor(maxAvailable * pct);
+      if (amount > maxAvailable) {
+        amount = maxAvailable;
+      }
+      if (amount < 0) {
+        amount = 0;
+      }
+      players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
+      players[i].playerMoney = maxAvailable - amount;
+      players[i].tempBet = amount;
+      players[i].setPlayerMoney(players[i].playerMoney);
+      players[i].setPlayerTotalBet(players[i].playerTotalBet);
+    }
+  }
 }
 
 // "Min" raise: iguala lo que falta para call + una ciega minima de aumento

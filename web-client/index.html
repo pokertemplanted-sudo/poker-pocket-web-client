@@ -399,7 +399,10 @@
 </div>
 
 <!-- ****************************************************************************** -->
-<div class="container" style="min-width: 850px; width: 850px; margin-top: 5px">
+<div id="tableView" class="container view-hidden" style="min-width: 850px; width: 850px; margin-top: 5px">
+
+    <button type="button" id="backToLobbyBtn" class="btn btn-secondary" style="margin-bottom: 8px" onclick="backToLobby()">← Volver al Lobby</button>
+
 
 
     <div class="card status-bar">
@@ -738,8 +741,19 @@
 
 
     <!-- Bottom controls -->
-    <div class="card" style="background-color: #434343; width: 100%; margin-top: -20px">
+    <div id="bettingControls" class="card" style="background-color: #434343; width: 100%; margin-top: -20px">
         <div class="container" style="width: 100%; padding: 10px; margin-left: 10%">
+            <!-- Pot-fraction shortcuts: ya existían potThirdClick/potHalfClick/potThreeQuarterClick/potFullClick
+                 en app.js con toda la matemática (clamp contra el stack, no envían la apuesta), solo faltaban
+                 estos botones para llamarlas. -->
+            <div class="row pot-fraction-row" style="width: 100%; margin-bottom: 6px">
+                <div class="col">
+                    <button onclick="potThirdClick()" id="potThirdBtn" type="button" class="btn btn-success pot-fraction-btn">1/3 Pot</button>
+                    <button onclick="potHalfClick()" id="potHalfBtn" type="button" class="btn btn-success pot-fraction-btn">1/2 Pot</button>
+                    <button onclick="potThreeQuarterClick()" id="potThreeQuarterBtn" type="button" class="btn btn-success pot-fraction-btn">3/4 Pot</button>
+                    <button onclick="potFullClick()" id="potFullBtn" type="button" class="btn btn-success pot-fraction-btn">Pot</button>
+                </div>
+            </div>
             <div class="row" style="width: 100%">
                 <div class="col">
                     <button onclick="betTenClick()" type="button" class="btn btn-danger">+10</button>
@@ -748,7 +762,12 @@
                     <button onclick="betFiveHundredClick()" type="button" class="btn btn-danger">+500</button>
                     <button onclick="betAllInClick()" type="button" class="btn btn-danger">All in</button>
                 </div>
-                <div class="col">
+                <div class="col" style="display: flex; align-items: center; gap: 8px;">
+                    <!-- Slider vertical: mismo patrón que potFractionClick (clampea contra el stack,
+                         solo carga tempBet, no envía nada hasta apretar Raise/Aumentar). Oculto en
+                         desktop, visible solo en mobile via CSS (ver @media en stake-theme.css). -->
+                    <input type="range" id="raiseSlider" class="raise-slider-vertical" min="0" max="100" value="0"
+                           oninput="raiseSliderInput(this.value)">
                     <button onclick="foldBtnClick()" id="foldBtn" type="button" class="btn btn-danger">Fold</button>
                     <button onclick="checkBtnClick()" id="checkBtn" type="button" class="btn btn-danger">Check</button>
                     <button onclick="raiseBtnClick()" id="raiseBtn" type="button" class="btn btn-danger">Raise</button>

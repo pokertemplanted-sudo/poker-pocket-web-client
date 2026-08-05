@@ -27,6 +27,7 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <link href="app.css" rel="stylesheet">
+    <link href="stake-theme.css" rel="stylesheet">
     <script async src="https://analytics.nitramite.com/script.js" data-website-id="c16175b4-93df-47e1-9b69-9281be276972"></script>
 
 </head>
@@ -221,42 +222,45 @@
 <!-- Select room modal -->
 <div class="modal fade" id="selectRoomModal" tabindex="-1" role="dialog" aria-labelledby="SelectModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="SelectModalLabel">Select room</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <div class="modal-content lobby-modal">
+            <div class="lobby-header">
+                <div class="lobby-header-left">
+                    <div class="lobby-avatar">♠</div>
+                    <div>
+                        <div id="lobbyUsername" class="lobby-username">Invitado</div>
+                        <div class="lobby-status"><span class="lobby-status-dot"></span>En línea</div>
+                    </div>
+                </div>
+                <div class="lobby-header-right">
+                    <div id="lobbyBalance" class="lobby-balance">Fichas: se eligen al sentarte</div>
+                    <button type="button" class="lobby-recharge-btn" onclick="toastr['info']('Este juego no tiene banca propia todavía -- las fichas se compran al sentarte a una mesa.');">+ Recargar</button>
+                </div>
+                <button type="button" class="close lobby-close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <p>
-                    <button type="button" onclick="getRooms('all'); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d">Playing rooms</button>
+            <div class="lobby-body">
+                <div class="lobby-banner">
+                    <div class="lobby-banner-title" id="SelectModalLabel">Elegí tu mesa</div>
+                    <div class="lobby-banner-subtitle">Sentate en cualquier mesa disponible y empezá a jugar.</div>
+                </div>
+                <div class="lobby-tabs">
+                    <button type="button" class="lobby-tab lobby-tab-active">Texas Hold'em</button>
+                    <button type="button" class="lobby-tab lobby-tab-disabled" disabled>Omaha <span class="lobby-soon-badge">PRONTO</span></button>
+                </div>
+                <div class="lobby-mode-row">
+                    <button type="button" onclick="getRooms(currentRoomFilter); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d">Playing rooms</button>
                     <button type="button" onclick="getSpectateRooms(); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-default btn3d">Spectate rooms</button>
-                </p>
-                <div style="margin-left: 10px; margin-bottom: 5px">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="allRB" name="radio" type="radio" checked="checked" class="custom-control-input">
-                        <label class="custom-control-label" for="allRB">All</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="lowRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="lowRB">Low bets</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="mediumRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="mediumRB">Medium bets</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="highRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="highRB">High bets</label>
-                    </div>
                 </div>
-                <div id="roomListGroup" class="list-group">
-                    <!-- Dynamically appending here from javascript -->
+                <div class="lobby-filters">
+                    <button type="button" id="allRB" class="lobby-pill lobby-pill-active">All</button>
+                    <button type="button" id="lowRB" class="lobby-pill">Low bets</button>
+                    <button type="button" id="mediumRB" class="lobby-pill">Medium bets</button>
+                    <button type="button" id="highRB" class="lobby-pill">High bets</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <div id="room-list-container">
+                    <!-- Dynamically appending here from javascript, ver parseRooms() en webSocket.js -->
+                </div>
             </div>
         </div>
     </div>

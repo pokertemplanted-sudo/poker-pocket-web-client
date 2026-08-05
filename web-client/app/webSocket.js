@@ -349,39 +349,69 @@ function onMessageHandler(jsonData) {
 
 var lastRoomsData = []; // keep last getRooms payload so we can read freeSeats/buyIn when a room is clicked
 
+function roomTierLabel(roomMinBet) {
+  if (roomMinBet < 100) return 'Low';
+  if (roomMinBet < 1000) return 'Mid';
+  return 'VIP';
+}
+
 function parseRooms(rData, isSpectateMode) {
   // Example: {"key":"getRooms","data":[{"roomId":0,"roomName":"Room 0","playerCount":0,"maxSeats":7,"buyInMin":200,"buyInMax":2000,"freeSeats":[0,1,2,3,4,5,6]}]}
   console.log(JSON.stringify(rData));
   lastRoomsData = rData;
-  var selectModalTitle = document.getElementById('SelectModalLabel');
-  isSpectateMode ? selectModalTitle.innerHTML = 'Select room to spectate' : selectModalTitle.innerHTML = 'Select room';
-  document.getElementById('roomListGroup').innerHTML = '';
-  var icon = isSpectateMode ? 'spectateIcon' : 'chipIcon';
-  var $roomListGroup = $("#roomListGroup");
+
+  // Header info (username es real, viene de localStorage; balance NO existe
+  // como concepto de banca en este backend hoy -- solo hay fichas de mesa,
+  // asi que se muestra un placeholder honesto en vez de inventar un numero)
+  var uname = localStorage.getItem(LS_USERNAME);
+  $('#lobbyUsername').text(uname ? uname : 'Invitado');
+  $('#lobbyBalance').text('Fichas: se eligen al sentarte');
+
+
+
+  var $container = $('#room-list-container');
+  $container.empty();
+
+  if (rData.length === 0) {
+    $container.append('<div class="lobby-empty">No hay mesas con este filtro por ahora.</div>');
+    return;
+  }
+
   for (var i = 0; i < rData.length; i++) {
     var minBet = rData[i].hasOwnProperty('roomMinBet') ? rData[i].roomMinBet : 10;
-    $roomListGroup.append(
-      "<button type='button' id='" + rData[i].roomId + "'" +
-      " class='list-group-item list-group-item-action'>" +
-      "<div class='d-flex flex-row'><div class='p-2' style='margin-left: -10px;'>" +
-      "<div class='" + icon + "'></div>" +
-      "</div><div class='p-2' style='margin-left: -10px;'>"
-      + "<b>" + rData[i].roomName + "</b>" + " ➟ " + rData[i].playerCount + "/" + rData[i].maxSeats + " ➟ MB " + minBet + "$" +
-      "</div> </div>" +
-      "</button>"
+    var tier = roomTierLabel(minBet);
+    var playerCount = rData[i].playerCount || 0;
+    var maxSeats = rData[i].maxSeats || 7;
+    var buyInMin = rData[i].buyInMin || (minBet * 20);
+    var buyInMax = rData[i].buyInMax || (minBet * 200);
+
+    var $card = $(
+      "<div class='room-card' data-room-id='" + rData[i].roomId + "'>" +
+      "  <div class='room-card-left'>" +
+      "    <div class='room-seat-badge'>" + playerCount + "/" + maxSeats + "</div>" +
+      "    <div>" +
+      "      <div class='room-card-name'>" + rData[i].roomName + "</div>" +
+      "      <div class='room-card-meta'>" +
+      "        <span class='room-tier-tag room-tier-" + tier.toLowerCase() + "'>" + tier + "</span>" +
+      "        <span class='room-minbet'>MB " + minBet + "$</span>" +
+      "        <span class='room-buyin'>Buy-in " + buyInMin + "$ - " + buyInMax + "$</span>" +
+      "      </div>" +
+      "    </div>" +
+      "  </div>" +
+      "  <button type='button' class='room-sit-btn'>" + (isSpectateMode ? 'Ver' : 'Sentarse') + "</button>" +
+      "</div>"
     );
-  }
-  $roomListGroup.find("button").click(function () {
-    ROOM_ID = Number($(this).attr("id"));
-    if (ROOM_ID !== void 0) {
+    $card.find('.room-sit-btn').click(function () {
+      ROOM_ID = Number($(this).closest('.room-card').attr('data-room-id'));
       $('#selectRoomModal').modal('hide');
       if (isSpectateMode) {
         selectSpectateRoom();
       } else {
         openSeatPicker(ROOM_ID);
       }
-    }
-  });
+    });
+    $container.append($card);
+  }
 }
 
 // ----------------------------------------------------
@@ -993,16 +1023,31 @@ function sleep(ms) {
 }
 
 
+var currentRoomFilter = 'all';
+
+function setActiveFilterPill(id) {
+  $('.lobby-pill').removeClass('lobby-pill-active');
+  $('#' + id).addClass('lobby-pill-active');
+}
+
 $('#allRB').click(function () {
+  currentRoomFilter = 'all';
+  setActiveFilterPill('allRB');
   getRooms("all");
 });
 $('#lowRB').click(function () {
+  currentRoomFilter = 'lowBets';
+  setActiveFilterPill('lowRB');
   getRooms("lowBets");
 });
 $('#mediumRB').click(function () {
+  currentRoomFilter = 'mediumBets';
+  setActiveFilterPill('mediumRB');
   getRooms("mediumBets");
 });
 $('#highRB').click(function () {
+  currentRoomFilter = 'highBets';
+  setActiveFilterPill('highRB');
   getRooms("highBets");
 });
 

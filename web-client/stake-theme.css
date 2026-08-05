@@ -120,3 +120,275 @@
 .potShortcutBtn:active {
   filter: brightness(0.95);
 }
+
+/* ------------------------------------------------------------------------
+   Rediseño de Lobby (Dust to Glory Poker) — oscuro, moderno, tarjetas.
+   ------------------------------------------------------------------------ */
+.lobby-modal {
+  background-color: #0B0E14;
+  color: #E7ECF3;
+  border: 1px solid #1E2530;
+  border-radius: 10px;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1E2530;
+  padding: 14px 18px;
+}
+
+.lobby-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lobby-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #151923;
+  border: 1px solid #2A3340;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFD13B;
+  font-size: 18px;
+}
+
+.lobby-username {
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.lobby-status {
+  font-size: 12px;
+  color: #8B93A1;
+}
+
+.lobby-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #24D06A;
+  margin-right: 5px;
+}
+
+.lobby-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 30px;
+}
+
+.lobby-balance {
+  color: #C6CCD8;
+  font-size: 13px;
+}
+
+.lobby-recharge-btn {
+  background-color: #FFD13B;
+  color: #14151A;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.lobby-recharge-btn:hover {
+  filter: brightness(1.08);
+}
+
+.lobby-close {
+  color: #E7ECF3;
+  opacity: 0.7;
+}
+
+.lobby-body {
+  background-color: #0B0E14;
+  padding: 18px;
+}
+
+.lobby-banner {
+  background: linear-gradient(135deg, #151923 0%, #0F1923 100%);
+  border: 1px solid #1E2530;
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.lobby-banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.lobby-banner-subtitle {
+  font-size: 13px;
+  color: #8B93A1;
+  margin-top: 4px;
+}
+
+.lobby-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.lobby-tab {
+  flex: 1;
+  background: #151923;
+  border: 1px solid #2A3340;
+  color: #C6CCD8;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lobby-tab-active {
+  border: 2px solid #FFD13B;
+  color: #FFD13B;
+}
+
+.lobby-tab-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lobby-soon-badge {
+  background: #2A3340;
+  color: #C6CCD8;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.lobby-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.lobby-pill {
+  background: #151923;
+  border: 1px solid #2A3340;
+  color: #C6CCD8;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lobby-pill-active {
+  background: #FFD13B;
+  color: #14151A;
+  border-color: #FFD13B;
+}
+
+.lobby-mode-row {
+  margin-bottom: 10px;
+}
+
+#room-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.lobby-empty {
+  color: #8B93A1;
+  text-align: center;
+  padding: 20px;
+}
+
+.room-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #151923;
+  border: 1px solid #232C38;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.room-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.room-seat-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #0F1923;
+  border: 1px solid #2A3340;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #E7ECF3;
+  flex-shrink: 0;
+}
+
+.room-card-name {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.room-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.room-tier-tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.room-tier-low { background: #17362A; color: #3FCE8A; }
+.room-tier-mid { background: #3A2E12; color: #F0B429; }
+.room-tier-vip { background: #3A1530; color: #E362C9; }
+
+.room-minbet, .room-buyin {
+  color: #8B93A1;
+}
+
+.room-sit-btn {
+  background-color: #FFD13B;
+  color: #14151A;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.room-sit-btn:hover {
+  filter: brightness(1.1);
+}

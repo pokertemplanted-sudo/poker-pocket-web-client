@@ -221,40 +221,54 @@
 
 <!-- Select room modal -->
 <div class="modal fade" id="selectRoomModal" tabindex="-1" role="dialog" aria-labelledby="SelectModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="SelectModalLabel">Select room</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content lobby-modal">
+            <div class="modal-header lobby-header">
+                <div class="lobby-header-left">
+                    <div class="lobby-avatar">♠</div>
+                    <div>
+                        <div class="lobby-username" id="lobbyUsername">Player</div>
+                        <div class="lobby-status"><span class="lobby-status-dot"></span>En línea</div>
+                    </div>
+                </div>
+                <div class="lobby-header-right">
+                    <div class="lobby-balance" id="lobbyBalance">-- fichas</div>
+                    <button type="button" class="lobby-recharge-btn" title="La recarga de fichas todavia no esta conectada a un sistema de banca real -- por ahora las fichas se compran al sentarte en una mesa (buy-in)." onclick="toastr['info']('La recarga todavia no esta conectada a un sistema de banca. Por ahora, elegis tus fichas al sentarte en una mesa (buy-in).');">+ Recargar</button>
+                </div>
+                <button type="button" class="close lobby-close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <p>
-                    <button type="button" onclick="getRooms('all'); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d">Playing rooms</button>
-                    <button type="button" onclick="getSpectateRooms(); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-default btn3d">Spectate rooms</button>
+            <div class="modal-body lobby-body">
+                <div class="lobby-banner">
+                    <div class="lobby-banner-title">Bienvenido a Dust to Glory Poker</div>
+                    <div class="lobby-banner-subtitle">Elegí tu mesa y sentate a jugar Texas Hold'em en tiempo real.</div>
+                </div>
+
+                <div class="lobby-tabs">
+                    <button type="button" class="lobby-tab lobby-tab-active" id="tabHoldem">Texas Hold'em</button>
+                    <button type="button" class="lobby-tab lobby-tab-disabled" id="tabOmaha" disabled>
+                        Omaha <span class="lobby-soon-badge">PRONTO</span>
+                    </button>
+                </div>
+
+                <div class="lobby-filters" id="lobbyFilters">
+                    <button type="button" id="allRB" class="lobby-pill lobby-pill-active">Todas</button>
+                    <button type="button" id="lowRB" class="lobby-pill">Low</button>
+                    <button type="button" id="mediumRB" class="lobby-pill">Mid</button>
+                    <button type="button" id="highRB" class="lobby-pill">VIP</button>
+                </div>
+
+                <p class="lobby-mode-row">
+                    <button type="button" onclick="getRooms(currentRoomFilter || 'all'); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-primary btn3d btn-sm">Playing rooms</button>
+                    <button type="button" onclick="getSpectateRooms(); if (enableSounds) {playCardChipLayOne.play();}" class="btn btn-default btn3d btn-sm">Spectate rooms</button>
                 </p>
-                <div style="margin-left: 10px; margin-bottom: 5px">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="allRB" name="radio" type="radio" checked="checked" class="custom-control-input">
-                        <label class="custom-control-label" for="allRB">All</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="lowRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="lowRB">Low bets</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="mediumRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="mediumRB">Medium bets</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="highRB" name="radio" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="highRB">High bets</label>
-                    </div>
+
+                <div id="room-list-container">
+                    <!-- Dynamically appending room cards here from javascript -->
                 </div>
-                <div id="roomListGroup" class="list-group">
-                    <!-- Dynamically appending here from javascript -->
-                </div>
+                <!-- Kept for backward compatibility with any code still referencing the old id; unused visually -->
+                <div id="roomListGroup" style="display:none;"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

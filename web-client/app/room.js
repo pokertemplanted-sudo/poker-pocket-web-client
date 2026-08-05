@@ -91,8 +91,12 @@ Room.prototype.setMinBet = function (money) {
 };
 
 // When calling situation occurs, swap check btn text to call (handled by statusUpdate call from server)
-Room.prototype.toggleCheckAndCall = function (isCallSituation) {
-  isCallSituation ? this.checkBtn.innerHTML = 'Call' : this.checkBtn.innerHTML = 'Check';
+Room.prototype.toggleCheckAndCall = function (isCallSituation, callAmount) {
+  if (isCallSituation) {
+    this.checkBtn.innerHTML = (callAmount > 0) ? ('Call ' + Number(callAmount).currencyFormat(2, '.', ',') + '$') : 'Call';
+  } else {
+    this.checkBtn.innerHTML = 'Check';
+  }
 };
 
 Room.prototype.actionBtnVisibility = function (visible, isInit) {

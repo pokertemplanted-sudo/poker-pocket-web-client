@@ -164,6 +164,26 @@ function potFullClick() {
   potFractionClick(1);
 }
 
+// "Min" raise: iguala lo que falta para call + una ciega minima de aumento
+// (estandar en cualquier plataforma real). No suma, fija el monto.
+function minRaiseClick() {
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
+      var minBet = Number(window.currentRoomMinBet) || 0;
+      var maxAvailable = players[i].playerMoney + players[i].tempBet;
+      var amount = minBet > 0 ? minBet : Math.max(1, Math.floor(maxAvailable * 0.05));
+      if (amount > maxAvailable) {
+        amount = maxAvailable;
+      }
+      players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
+      players[i].playerMoney = maxAvailable - amount;
+      players[i].tempBet = amount;
+      players[i].setPlayerMoney(players[i].playerMoney);
+      players[i].setPlayerTotalBet(players[i].playerTotalBet);
+    }
+  }
+}
+
 function raiseHelper(amount, allIn) {
   for (var i = 0; i < players.length; i++) {
     if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn && Number(players[i].playerMoney) > 0) {

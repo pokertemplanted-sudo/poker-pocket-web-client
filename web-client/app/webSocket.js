@@ -461,6 +461,7 @@ function roomParameters(rData) {
   initSeats();
   getLoggedInUserStatistics(); // Added so refreshing xp needed counter updates automatically
   room.setMinBet(rData.roomMinBet);
+  window.currentRoomMinBet = Number(rData.roomMinBet) || 0; // used by the "Min" raise shortcut
   var gameStarted = rData.gameStarted;
   if (rData.middleCards.length > 0) {
     for (var m = 0; m < rData.middleCards.length; m++) {
@@ -545,7 +546,28 @@ function statusUpdate(sData) {
   room.setRoomWaitingPlayersCount(sData.appendPlayersCount);
   room.setRoomDeckStatus(sData.deckStatus);
   room.setRoomDeckBurnedCount(sData.deckCardsBurned);
-  room.toggleCheckAndCall(sData.isCallSituation);
+  // Calcula cuanto falta igualar para el jugador local, asi el boton puede
+  // mostrar "Call 250$" en vez de un generico "Call" sin monto (como en las
+  // plataformas reales). No hace falta un campo nuevo del backend: se puede
+  // derivar de las apuestas ya presentes en playersData.
+  var myCallAmount = 0;
+  if (sData.isCallSituation) {
+    var highestBet = 0;
+    for (var h = 0; h < sData.playersData.length; h++) {
+      if (!sData.playersData[h].isFold && sData.playersData[h].totalBet > highestBet) {
+        highestBet = sData.playersData[h].totalBet;
+      }
+    }
+    var myData = null;
+    for (var m = 0; m < sData.playersData.length; m++) {
+      if (Number(sData.playersData[m].playerId) === Number(CONNECTION_ID)) {
+        myData = sData.playersData[m];
+        break;
+      }
+    }
+    myCallAmount = myData ? Math.max(0, highestBet - myData.totalBet) : 0;
+  }
+  room.toggleCheckAndCall(sData.isCallSituation, myCallAmount);
   for (i = 0; i < sData.playersData.length; i++) {
     var pMoney = sData.playersData[i].playerMoney;
     var pTotalBet = sData.playersData[i].totalBet;

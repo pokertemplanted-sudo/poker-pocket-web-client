@@ -53,23 +53,23 @@ Room.prototype.setRoomStatusText = function (statusStr) {
 };
 
 Room.prototype.setRoomName = function (roomNameStr) {
-  this.roomName.innerHTML = "♦ " + roomNameStr;
+  this.roomName.querySelector('.status-stat__value').textContent = roomNameStr;
 };
 
 Room.prototype.setRoomSpectatorCount = function (spectatorCount) {
-  this.spectatorsCount.innerHTML = "♦ Spectating: " + spectatorCount;
+  this.spectatorsCount.querySelector('.status-stat__value').textContent = spectatorCount;
 };
 
 Room.prototype.setRoomWaitingPlayersCount = function (waitingPlayersCount) {
-  this.waitingPlayersCount.innerHTML = "♦ Waiting: " + waitingPlayersCount;
+  this.waitingPlayersCount.querySelector('.status-stat__value').textContent = waitingPlayersCount;
 };
 
 Room.prototype.setRoomDeckStatus = function (deckStatus) {
-  this.deckStatus.innerHTML = "♦ Deck: " + deckStatus;
+  this.deckStatus.querySelector('.status-stat__value').textContent = deckStatus;
 };
 
 Room.prototype.setRoomDeckBurnedCount = function (burnedCards) {
-  this.deckCardsBurned.innerHTML = "♦ Burned: " + burnedCards;
+  this.deckCardsBurned.querySelector('.status-stat__value').textContent = burnedCards;
 };
 
 Room.prototype.setTotalPot = function (money) {
@@ -91,12 +91,8 @@ Room.prototype.setMinBet = function (money) {
 };
 
 // When calling situation occurs, swap check btn text to call (handled by statusUpdate call from server)
-Room.prototype.toggleCheckAndCall = function (isCallSituation, callAmount) {
-  if (isCallSituation) {
-    this.checkBtn.innerHTML = (callAmount > 0) ? ('Call ' + Number(callAmount).currencyFormat(2, '.', ',') + '$') : 'Call';
-  } else {
-    this.checkBtn.innerHTML = 'Check';
-  }
+Room.prototype.toggleCheckAndCall = function (isCallSituation) {
+  isCallSituation ? this.checkBtn.innerHTML = 'Call' : this.checkBtn.innerHTML = 'Check';
 };
 
 Room.prototype.actionBtnVisibility = function (visible, isInit) {

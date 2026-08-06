@@ -478,6 +478,20 @@ function selectSeatResult(data) {
     ROOM_ID = -1;
     $('#selectRoomModal').modal('show');
     getRooms("all");
+    return;
+  }
+
+  // Sentada confirmada: recién acá corresponde pasar de la vista Lobby a
+  // la vista Mesa (ver el comentario en app.js/backToLobby -- éste es el
+  // "camino de ida" que faltaba). Sin esto, #tableView se queda con
+  // view-hidden para siempre y la mesa nunca se ve, aunque el servidor
+  // ya haya mandado todos los datos de la partida correctamente.
+  $('#selectRoomModal').modal('hide');
+  $('#seatPickerModal').modal('hide');
+  var tableView = document.getElementById('tableView');
+  if (tableView) {
+    tableView.classList.remove('view-hidden');
+    tableView.classList.add('view-active');
   }
 }
 

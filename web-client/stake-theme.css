@@ -209,6 +209,39 @@
   box-shadow: 0 0 14px rgba(212, 122, 39, 0.6);
 }
 
+/* OJO: esto apuntaba a #potShortcuts/.potShortcutBtn, pero el HTML real
+   (index.html) usa .pot-fraction-row/.pot-fraction-btn -- dos sesiones
+   distintas nombraron esto distinto y el CSS nunca pegaba. Selectores
+   corregidos para que matcheen el markup real; se deja el bloque viejo
+   comentado abajo por si algo más lo referencia.
+   ------------------------------------------------------------------------ */
+.pot-fraction-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pot-fraction-btn {
+  background-color: #118C4F !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: filter 0.15s ease;
+}
+
+.pot-fraction-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.pot-fraction-btn:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
 #potShortcuts {
   flex-wrap: wrap;
 }

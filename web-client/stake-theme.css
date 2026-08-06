@@ -89,10 +89,26 @@
   display: block;
 }
 
-/* Slider vertical: oculto en desktop por defecto, solo tiene sentido en el
-   layout mobile de abajo. */
+/* Slider vertical: visible siempre que el panel de Aumentar esté abierto,
+   en cualquier ancho de pantalla (antes solo aparecía en mobile por error). */
 .raise-slider-vertical {
-  display: none;
+  display: inline-block;
+  width: 32px;
+  height: 90px;
+  writing-mode: vertical-lr;
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  accent-color: #00E701;
+  vertical-align: middle;
+}
+/* Fallback por si el navegador ignora appearance:slider-vertical */
+@supports not (appearance: slider-vertical) {
+  .raise-slider-vertical {
+    width: 90px;
+    height: 32px;
+    transform: rotate(-90deg);
+    margin: 29px -29px;
+  }
 }
 .raise-amount-label {
   color: #FFFFFF;
@@ -177,25 +193,9 @@
   /* Slider vertical, justo encima del botón Raise/Aumentar, como en la
      referencia — con appearance:slider-vertical donde el navegador lo
      soporta (Firefox/Chromium viejo), y como fallback un range horizontal
-     rotado -90deg (funciona en Safari/Chrome mobile modernos). */
-  .raise-slider-vertical {
-    display: block;
-    width: 32px;
-    height: 90px;
-    writing-mode: vertical-lr;
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
-    accent-color: #00E701;
-  }
-  /* Fallback por si el navegador ignora appearance:slider-vertical */
-  @supports not (appearance: slider-vertical) {
-    .raise-slider-vertical {
-      width: 90px;
-      height: 32px;
-      transform: rotate(-90deg);
-      margin: 29px -29px;
-    }
-  }
+     rotado -90deg (funciona en Safari/Chrome mobile modernos) — la regla
+     base ya vive fuera del media query, así que el slider funciona igual
+     en mobile y en desktop. */
 }
 
 /* ------------------------------------------------------------------------

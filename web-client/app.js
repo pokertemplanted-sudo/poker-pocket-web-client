@@ -51,6 +51,7 @@ function foldBtnClick() {
     setFold();
     actionButtonsEnabled = false;
     disableActionButtons();
+    closeRaisePanel();
   }
 }
 
@@ -68,6 +69,7 @@ function checkBtnClick() { // Also handles Call
     }
     actionButtonsEnabled = false;
     disableActionButtons();
+    closeRaisePanel();
   }
 }
 
@@ -76,6 +78,7 @@ function raiseBtnClick() {
     setRaise(myRaiseHelper());
     actionButtonsEnabled = false;
     disableActionButtons();
+    closeRaisePanel();
   }
 }
 
@@ -159,6 +162,7 @@ function potFractionClick(fraction) {
       if (amount >= maxAvailable && maxAvailable > 0) {
         toastr["info"]("All-in (saldo insuficiente para " + Math.round(fraction * 100) + "% del pot)");
       }
+      updateRaiseAmountLabel();
     }
   }
 }
@@ -201,6 +205,7 @@ function raiseSliderInput(sliderValue) {
       players[i].setPlayerTotalBet(players[i].playerTotalBet);
     }
   }
+  updateRaiseAmountLabel();
 }
 
 // "Min" raise: iguala lo que falta para call + una ciega minima de aumento
@@ -220,6 +225,59 @@ function minRaiseClick() {
       players[i].setPlayerMoney(players[i].playerMoney);
       players[i].setPlayerTotalBet(players[i].playerTotalBet);
     }
+  }
+  updateRaiseAmountLabel();
+}
+
+// Refleja el tempBet actual del jugador en la etiqueta al lado del slider,
+// dentro del panel de monto — así el numero que ve coincide siempre con lo
+// que realmente se va a mandar al apretar "Aumentar".
+function updateRaiseAmountLabel() {
+  var label = document.getElementById('raiseAmountLabel');
+  if (!label) {
+    return;
+  }
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].playerId == CONNECTION_ID) {
+      label.textContent = players[i].tempBet || 0;
+      var slider = document.getElementById('raiseSlider');
+      if (slider) {
+        var maxAvailable = players[i].playerMoney + players[i].tempBet;
+        slider.value = maxAvailable > 0 ? Math.round((players[i].tempBet / maxAvailable) * 100) : 0;
+      }
+      return;
+    }
+  }
+}
+
+// Paso 1 del flujo de dos pasos: el "Raise" de la fila principal NO manda
+// nada, solo abre el panel de monto (pot-fraction/chips/slider) para elegir
+// cuánto — igual que cualquier plataforma real, en vez de mandar de una.
+function openRaisePanel() {
+  var panel = document.getElementById('raiseAmountPanel');
+  if (panel) {
+    panel.classList.remove('view-hidden');
+    panel.classList.add('view-active');
+    updateRaiseAmountLabel();
+  }
+}
+
+// Cierra el panel y lo resetea a 0 — se llama tanto después de mandar la
+// apuesta real (raiseBtnClick) como cuando el turno del jugador termina
+// (para que no quede un monto viejo cargado en la próxima vez que abra).
+function closeRaisePanel() {
+  var panel = document.getElementById('raiseAmountPanel');
+  if (panel) {
+    panel.classList.remove('view-active');
+    panel.classList.add('view-hidden');
+  }
+  var slider = document.getElementById('raiseSlider');
+  if (slider) {
+    slider.value = 0;
+  }
+  var label = document.getElementById('raiseAmountLabel');
+  if (label) {
+    label.textContent = '0';
   }
 }
 
@@ -249,6 +307,7 @@ function raiseHelper(amount, allIn) {
           playCardPlaceChipsOne.play();
         }
       }
+      updateRaiseAmountLabel();
     }
   }
 }

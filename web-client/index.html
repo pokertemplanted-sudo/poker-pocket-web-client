@@ -78,6 +78,9 @@
 <div id="noSocketConnection" onclick="location.reload()" style="background-color: #d9534f; height: 0; text-align: center; color: white; font-size: 20px; padding-bottom: 4px; visibility: collapse;" role="button">
     No connection, click here to try again
 </div>
+<div id="devModeWarning" onclick="localStorage.removeItem(LS_MODE_TOGGLE_STATE); location.reload();" style="display: none; background-color: #b8860b; height: auto; text-align: center; color: white; font-size: 14px; padding: 6px 4px; cursor: pointer;" role="button">
+    ⚠ Modo DEV activo (conectando a localhost, no al servidor real). Click para volver a modo producción.
+</div>
 
 <!-- ****************************************************************************** -->
 

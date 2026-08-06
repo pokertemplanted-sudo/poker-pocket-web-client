@@ -284,6 +284,7 @@ function initSettingButtons() {
     mode = localStorage.getItem(LS_MODE_TOGGLE_STATE) === 'true';
   }
   $("[name='connection-mode-toggle']").bootstrapSwitch('state', mode, true);
+  document.getElementById('devModeWarning').style.display = mode ? 'block' : 'none';
   if (localStorage.getItem(LS_USE_BLACK_CARDS) === null || localStorage.getItem(LS_USE_BLACK_CARDS) === 'undefined') {
     localStorage.setItem(LS_USE_BLACK_CARDS, false);
   }
@@ -299,6 +300,7 @@ function initSettingButtons() {
   }
   $('input[name="connection-mode-toggle"]').on('switchChange.bootstrapSwitch', function (event, state) {
     localStorage.setItem(LS_MODE_TOGGLE_STATE, JSON.stringify(state));
+    document.getElementById('devModeWarning').style.display = state ? 'block' : 'none';
     console.log(JSON.stringify(state));
     reloadDelay();
   });

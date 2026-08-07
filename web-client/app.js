@@ -142,6 +142,16 @@ function betAllInClick() {
 // Atajos de pot: fijan el monto exacto a apostar (no suman como +10/+25/etc),
 // tapeado al maximo de fichas del jugador. No envian la apuesta, solo dejan
 // el monto cargado para que el jugador confirme con "Raise".
+// Piso legal de la subida: lo que hace falta para igualar (myCallAmount,
+// expuesto por webSocket.js) mas al menos una subida minima de mesa
+// (currentRoomMinBet). Nunca puede superar lo que el jugador tiene
+// disponible — si el stack no alcanza ni para el minimo, el piso pasa a
+// ser directamente el all-in.
+function legalMinRaise(maxAvailable) {
+  var floor = (Number(window.currentMyCallAmount) || 0) + (Number(window.currentRoomMinBet) || 1);
+  return Math.min(floor, maxAvailable);
+}
+
 function potFractionClick(fraction) {
   for (var i = 0; i < players.length; i++) {
     if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
@@ -151,8 +161,9 @@ function potFractionClick(fraction) {
       if (amount > maxAvailable) {
         amount = maxAvailable; // guardia de seguridad: nunca mas que el saldo (all-in)
       }
-      if (amount < 0) {
-        amount = 0;
+      var floor = legalMinRaise(maxAvailable);
+      if (amount < floor) {
+        amount = floor; // nunca menos que el minimo legal de esta subida
       }
       players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
       players[i].playerMoney = maxAvailable - amount;
@@ -183,20 +194,22 @@ function potFullClick() {
   potFractionClick(1);
 }
 
-// Slider vertical (mobile): mapea 0-100% a 0..maxAvailable fichas, mismo
-// patrón de seguridad que potFractionClick — solo carga tempBet, nunca
-// envía la apuesta por si solo (eso lo sigue haciendo el botón Raise).
+// Slider vertical: mapea 0-100% a [legalMinRaise..maxAvailable] — el 0% de
+// la palanca ya es el minimo legal, nunca fichas de menos. Mismo patrón de
+// seguridad que potFractionClick — solo carga tempBet, nunca envía la
+// apuesta por si solo (eso lo sigue haciendo el botón Raise/Aumentar).
 function raiseSliderInput(sliderValue) {
   for (var i = 0; i < players.length; i++) {
     if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
       var maxAvailable = players[i].playerMoney + players[i].tempBet;
+      var floor = legalMinRaise(maxAvailable);
       var pct = Math.max(0, Math.min(100, Number(sliderValue))) / 100;
-      var amount = Math.floor(maxAvailable * pct);
+      var amount = Math.floor(floor + (maxAvailable - floor) * pct);
       if (amount > maxAvailable) {
         amount = maxAvailable;
       }
-      if (amount < 0) {
-        amount = 0;
+      if (amount < floor) {
+        amount = floor;
       }
       players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
       players[i].playerMoney = maxAvailable - amount;
@@ -208,17 +221,15 @@ function raiseSliderInput(sliderValue) {
   updateRaiseAmountLabel();
 }
 
-// "Min" raise: iguala lo que falta para call + una ciega minima de aumento
-// (estandar en cualquier plataforma real). No suma, fija el monto.
+// "Min" raise: el minimo legal real — lo que hace falta para igualar mas
+// una subida minima de mesa (antes esta funcion ignoraba el call y ponia
+// solo el minimo de mesa, lo cual podia ser menos de lo que hacia falta
+// para igualar — ya corregido, usa el mismo piso que el resto del panel).
 function minRaiseClick() {
   for (var i = 0; i < players.length; i++) {
     if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
-      var minBet = Number(window.currentRoomMinBet) || 0;
       var maxAvailable = players[i].playerMoney + players[i].tempBet;
-      var amount = minBet > 0 ? minBet : Math.max(1, Math.floor(maxAvailable * 0.05));
-      if (amount > maxAvailable) {
-        amount = maxAvailable;
-      }
+      var amount = legalMinRaise(maxAvailable);
       players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + amount;
       players[i].playerMoney = maxAvailable - amount;
       players[i].tempBet = amount;
@@ -243,7 +254,9 @@ function updateRaiseAmountLabel() {
       var slider = document.getElementById('raiseSlider');
       if (slider) {
         var maxAvailable = players[i].playerMoney + players[i].tempBet;
-        slider.value = maxAvailable > 0 ? Math.round((players[i].tempBet / maxAvailable) * 100) : 0;
+        var floor = legalMinRaise(maxAvailable);
+        var range = maxAvailable - floor;
+        slider.value = range > 0 ? Math.round(((players[i].tempBet - floor) / range) * 100) : 0;
       }
       return;
     }
@@ -253,11 +266,24 @@ function updateRaiseAmountLabel() {
 // Paso 1 del flujo de dos pasos: el "Raise" de la fila principal NO manda
 // nada, solo abre el panel de monto (pot-fraction/chips/slider) para elegir
 // cuánto — igual que cualquier plataforma real, en vez de mandar de una.
+// Arranca ya cargado con el mínimo legal (no en 0), como en cualquier
+// plataforma real: nunca se puede ofrecer "aumentar 0".
 function openRaisePanel() {
   var panel = document.getElementById('raiseAmountPanel');
   if (panel) {
     panel.classList.remove('view-hidden');
     panel.classList.add('view-active');
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].playerId == CONNECTION_ID && players[i].isPlayerTurn) {
+        var maxAvailable = players[i].playerMoney + players[i].tempBet;
+        var floor = legalMinRaise(maxAvailable);
+        players[i].playerTotalBet = players[i].playerTotalBet - players[i].tempBet + floor;
+        players[i].playerMoney = maxAvailable - floor;
+        players[i].tempBet = floor;
+        players[i].setPlayerMoney(players[i].playerMoney);
+        players[i].setPlayerTotalBet(players[i].playerTotalBet);
+      }
+    }
     updateRaiseAmountLabel();
   }
 }

@@ -895,6 +895,8 @@ function setTableColor(color) {
   pokerTable.classList.remove('felt-green', 'felt-red', 'felt-navy');
   pokerTable.classList.add('felt-' + color);
   pokerTable.style.backgroundImage = 'none'; // clear any legacy inline PNG background from the old toggle
+  document.body.classList.remove('theme-green', 'theme-red', 'theme-navy'); // fondo ambiental (premium-theme.css)
+  document.body.classList.add('theme-' + color);
   localStorage.setItem(LS_TABLE_COLOR, color);
   document.querySelectorAll('.table-swatch').forEach(function (el) {
     el.classList.toggle('table-swatch--active', el.getAttribute('data-color') === color);

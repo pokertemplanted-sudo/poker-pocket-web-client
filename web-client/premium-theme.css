@@ -371,3 +371,79 @@
 /* ---- Breathing room ---- */
 .modal-body { padding: 22px 24px !important; }
 .modal-header, .modal-footer { padding: 16px 24px !important; }
+
+/* ============================================================
+   Casino Premium: textura de fieltro + linea de apuestas +
+   fondo ambiental tematico. Capa aditiva sobre el sistema de
+   temas ya existente (felt-green/red/navy + theme swatches):
+   no pisa ninguna regla anterior, solo agrega detalle.
+   ============================================================ */
+
+.poker-table {
+  position: relative; /* ancora para los pseudo-elementos de textura/linea */
+}
+
+/* --- 1) Textura de fieltro: ruido sutil via SVG feTurbulence inline,
+   superpuesto con mix-blend-mode para no tapar el gradiente de luz
+   que ya define premium-theme.css mas arriba. No usa imagenes externas. --- */
+.poker-table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+  opacity: 0.05;
+  pointer-events: none; /* no interfiere con clicks en cartas/asientos */
+  z-index: 0;
+}
+
+/* --- 2) Linea de apuestas: sigue la curva ovalada de la mesa, separada
+   del borde exterior. El color base es dorado sutil; cada tema lo
+   afina con su propio acento (ver reglas por tema mas abajo). --- */
+.poker-table::after {
+  content: '';
+  position: absolute;
+  inset: 26px;
+  border-radius: 190px; /* misma familia de pill-shape que .poker-table (225px) menos el inset */
+  border: 2px solid rgba(255, 215, 130, 0.22);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Asegura que asientos/cartas/fichas (ya posicionados absolute dentro de
+   #pokerTable) queden siempre por encima de la textura y la linea. */
+.poker-table > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Acento de la linea de apuestas por tema */
+.poker-table.felt-red::after {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.poker-table.felt-navy::after {
+  border-color: rgba(200, 225, 255, 0.20);
+}
+
+/* --- 3) Fondo ambiental por tema: patron geometrico sutil sobre un
+   color base muy oscuro que acompaña al tapete, detras de la mesa. --- */
+body.theme-green {
+  background-color: #0c1710 !important;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(42, 82, 56, 0.18), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px) !important;
+}
+body.theme-red {
+  background-color: #170b0c !important;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(122, 28, 31, 0.20), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px) !important;
+}
+body.theme-navy {
+  background-color: #0a1420 !important;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(28, 58, 90, 0.20), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px) !important;
+}

@@ -45,14 +45,74 @@
 .navbar-brand { color: var(--pp-ink) !important; font-weight: 700; letter-spacing: -0.01em; }
 .nav-btn {
   background: transparent !important;
-  color: var(--pp-ink-dim) !important;
+  color: var(--pp-ink) !important;
+  opacity: 0.7;
   border: none !important;
   font-weight: 500;
   padding: 8px 14px !important;
-  border-radius: 8px;
+  transition: opacity 300ms var(--pp-ease);
+}
+.nav-btn:hover { opacity: 1; }
+
+/* ---- HUD: merged "back to lobby" + room status, single glass panel ---- */
+.status-bar.card, .status-bar {
+  background: rgba(242,241,239,0.05) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(242,241,239,0.10) !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+  padding: 6px 10px;
+}
+.status-stat { text-align: center; }
+.status-stat__label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-ink-faint) !important;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.status-stat__value {
+  display: block;
+  color: var(--pp-ink) !important;
+  font-weight: 700;
+  font-size: 15px;
+}
+#backToLobbyBtn {
+  background: rgba(242,241,239,0.05) !important;
+  color: var(--pp-ink) !important;
+  border: 1px solid rgba(242,241,239,0.10) !important;
+  border-radius: 12px !important;
+  font-weight: 500;
   transition: all 300ms var(--pp-ease);
 }
-.nav-btn:hover { color: var(--pp-ink) !important; background: rgba(242,241,239,0.06) !important; }
+#backToLobbyBtn:hover { background: rgba(242,241,239,0.10) !important; }
+
+/* ---- Settings gear button + its modal (holds the old toggle-bar) ---- */
+#tableSettingsBtn {
+  background: rgba(242,241,239,0.05) !important;
+  color: var(--pp-ink) !important;
+  border: 1px solid rgba(242,241,239,0.10) !important;
+  border-radius: 12px !important;
+  width: 42px; height: 42px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 300ms var(--pp-ease);
+}
+#tableSettingsBtn:hover { background: rgba(242,241,239,0.10) !important; transform: rotate(45deg); }
+#tableSettingsModal .toggle-bar {
+  display: flex; flex-direction: column; gap: 14px; padding: 4px 0;
+}
+#tableSettingsModal .toggle-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(242,241,239,0.04);
+  border: 1px solid var(--pp-line);
+  border-radius: 12px;
+}
+#tableSettingsModal .toggle-label { font-size: 13px; color: var(--pp-ink-dim) !important; font-weight: 500; }
 
 #noSocketConnection { background-color: var(--pp-red) !important; }
 #devModeWarning { background-color: var(--pp-blue) !important; }
@@ -176,32 +236,110 @@
 .room-sit-btn:hover { background: #b5282d !important; }
 
 /* ---- Poker table: keep the felt green, glass panels for seats ---- */
-.poker-table {
+.poker-table, .poker-table.felt-green {
   background: radial-gradient(ellipse 70% 70% at 50% 50%, var(--pp-felt) 0%, #1e3d29 70%, #17301f 100%) !important;
+  border-radius: 50% / 50% !important; /* elliptical, matches the box's own aspect ratio -- the original PNG had this baked into the image, we lost it when we replaced background-image with a flat gradient */
   border: 1px solid rgba(242,241,239,0.1) !important;
   box-shadow: 0 24px 60px rgba(0,0,0,0.5) !important;
 }
-.card {
-  background: var(--pp-glass) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--pp-line) !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
+.poker-table.felt-red {
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, #7A1C1F 0%, #571417 70%, #400e10 100%) !important;
+}
+.poker-table.felt-navy {
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, #1C3A5A 0%, #142940 70%, #0e1c2d 100%) !important;
+}
+
+/* ---- Table color swatches (settings modal) ---- */
+.table-color-swatches { display: flex; gap: 10px; }
+.table-swatch {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(242,241,239,0.15);
+  cursor: pointer;
+  padding: 0;
   transition: all 300ms var(--pp-ease);
 }
-.seatTexts { color: var(--pp-ink) !important; font-weight: 500; }
+.table-swatch:hover { transform: scale(1.12); }
+.table-swatch--active { border-color: var(--pp-ink); box-shadow: 0 0 0 2px rgba(242,241,239,0.25); }
+.table-swatch--green { background: var(--pp-felt); }
+.table-swatch--red { background: #7A1C1F; }
+.table-swatch--navy { background: #1C3A5A; }
+
+/* ---- Fold / Check / Raise: minimalist pill buttons, tactile feedback ---- */
+#foldBtn, #checkBtn, #raiseBtn {
+  border-radius: 9999px !important;
+  padding: 11px 26px !important;
+  transition: all 200ms ease-in-out !important;
+}
+#foldBtn:active, #checkBtn:active, #raiseBtn:active { transform: scale(0.95); }
+#foldBtn {
+  background: transparent !important;
+  color: #E88F92 !important;
+  border: 1.5px solid rgba(156,35,39,0.55) !important;
+}
+#foldBtn:hover { background: rgba(156,35,39,0.12) !important; }
+#checkBtn {
+  background: rgba(242,241,239,0.08) !important;
+  color: var(--pp-ink) !important;
+  border: 1.5px solid rgba(242,241,239,0.12) !important;
+}
+#checkBtn:hover { background: rgba(242,241,239,0.14) !important; }
+#raiseBtn {
+  background: linear-gradient(135deg, #ffcf6b, #e8a52e) !important;
+  color: #2a1d00 !important;
+  border: none !important;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(232,165,46,0.3) !important;
+}
+#raiseBtn:hover { filter: brightness(1.08); box-shadow: 0 8px 22px rgba(232,165,46,0.4) !important; }
+
+/* ---- iOS-style pill toggles (Auto check / Connection) ---- */
+#tableSettingsModal .bootstrap-switch {
+  border-radius: 9999px !important;
+  border: none !important;
+  background: rgba(242,241,239,0.10) !important;
+  box-shadow: none !important;
+}
+#tableSettingsModal .bootstrap-switch.bootstrap-switch-on {
+  background: var(--pp-blue) !important;
+}
+#tableSettingsModal .bootstrap-switch-handle-on,
+#tableSettingsModal .bootstrap-switch-handle-off {
+  background: transparent !important;
+  color: transparent !important;
+  border: none !important;
+}
+#tableSettingsModal .bootstrap-switch-label {
+  background: var(--pp-ink) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ---- Player seat glass: keep it light/translucent, not opaque black ---- */
+.card {
+  background: rgba(35,34,34,0.42) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(242,241,239,0.10) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.20) !important;
+  transition: all 300ms var(--pp-ease);
+}
+.seatTexts { color: var(--pp-ink) !important; font-weight: 600; }
 .totalPotText { color: var(--pp-ink) !important; font-weight: 700; }
 .minBetText { color: var(--pp-ink-faint) !important; font-weight: 400; }
 
 /* ---- Bottom betting controls: glass bar, breathing room ---- */
 #bettingControls {
-  background: var(--pp-glass) !important;
+  background: rgba(242,241,239,0.05) !important;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-top: 1px solid var(--pp-line) !important;
-  box-shadow: none !important;
-  padding: 8px 0;
+  border: 1px solid rgba(242,241,239,0.10) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35) !important;
+  padding: 14px 0;
+  margin-top: 10px !important;
+  margin-bottom: 4px;
   transition: all 300ms var(--pp-ease);
 }
 #foldBtn, #checkBtn, #raiseBtn, #raiseConfirmBtn {

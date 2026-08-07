@@ -238,7 +238,7 @@
 /* ---- Poker table: keep the felt green, glass panels for seats ---- */
 .poker-table, .poker-table.felt-green {
   background: radial-gradient(ellipse 70% 70% at 50% 50%, var(--pp-felt) 0%, #1e3d29 70%, #17301f 100%) !important;
-  border-radius: 50% / 50% !important; /* elliptical, matches the box's own aspect ratio -- the original PNG had this baked into the image, we lost it when we replaced background-image with a flat gradient */
+  border-radius: 225px !important; /* stadium/pill shape: half the table's fixed height, matches the original poker_table_green.png's shape exactly */
   border: 1px solid rgba(242,241,239,0.1) !important;
   box-shadow: 0 24px 60px rgba(0,0,0,0.5) !important;
 }

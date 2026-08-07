@@ -850,9 +850,12 @@
             <div class="modal-body">
                 <div class="toggle-bar">
                     <div class="toggle-item">
-                        <div class="toggle-label">Purple table</div>
-                        <input type="checkbox" name="purple-table-mode-toggle" data-on-color="danger" data-off-color="danger"
-                               data-on-text="Off" data-off-text="On" data-size="small" data-label-width="0">
+                        <div class="toggle-label">Table color</div>
+                        <div class="table-color-swatches">
+                            <button type="button" class="table-swatch table-swatch--green" data-color="green" onclick="setTableColor('green')" title="Verde clásico" aria-label="Verde clásico"></button>
+                            <button type="button" class="table-swatch table-swatch--red" data-color="red" onclick="setTableColor('red')" title="Rojo oscuro" aria-label="Rojo oscuro"></button>
+                            <button type="button" class="table-swatch table-swatch--navy" data-color="navy" onclick="setTableColor('navy')" title="Azul marino" aria-label="Azul marino"></button>
+                        </div>
                     </div>
                     <div class="toggle-item">
                         <div class="toggle-label">Black cards</div>
@@ -876,7 +879,32 @@
 </div>
 <!-- ****************************************************************************** -->
 <!-- Require scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.7/howler.min.js"></script>
+<script>
+// Table felt color: 3-way swatch selector (green/red/navy), replaces the old
+// "Purple table" boolean toggle -- a checkbox can't represent 3 states
+// cleanly, so this lives as its own small control instead of overloading
+// bootstrapSwitch. Applies a class on #pokerTable; premium-theme.css defines
+// the actual gradients for each. Persisted the same way every other setting
+// here is (plain localStorage), independent of LS_USE_PURPLE_TABLE (that key
+// is left alone/unused now -- no migration needed since it only ever
+// gated a boolean green/purple choice, and green is the new default anyway).
+var LS_TABLE_COLOR = 'LS_TABLE_COLOR';
+function setTableColor(color) {
+  var pokerTable = document.getElementById('pokerTable');
+  if (!pokerTable) return;
+  pokerTable.classList.remove('felt-green', 'felt-red', 'felt-navy');
+  pokerTable.classList.add('felt-' + color);
+  pokerTable.style.backgroundImage = 'none'; // clear any legacy inline PNG background from the old toggle
+  localStorage.setItem(LS_TABLE_COLOR, color);
+  document.querySelectorAll('.table-swatch').forEach(function (el) {
+    el.classList.toggle('table-swatch--active', el.getAttribute('data-color') === color);
+  });
+}
+document.addEventListener('DOMContentLoaded', function () {
+  var saved = localStorage.getItem(LS_TABLE_COLOR) || 'green';
+  setTableColor(saved);
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.7/howler.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

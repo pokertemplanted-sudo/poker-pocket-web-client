@@ -55,7 +55,7 @@
 .nav-btn:hover { opacity: 1; }
 
 /* ---- HUD: merged "back to lobby" + room status, single glass panel ---- */
-.status-bar {
+.status-bar.card, .status-bar {
   background: rgba(242,241,239,0.05) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -236,19 +236,93 @@
 .room-sit-btn:hover { background: #b5282d !important; }
 
 /* ---- Poker table: keep the felt green, glass panels for seats ---- */
-.poker-table {
+.poker-table, .poker-table.felt-green {
   background: radial-gradient(ellipse 70% 70% at 50% 50%, var(--pp-felt) 0%, #1e3d29 70%, #17301f 100%) !important;
   border-radius: 50% / 50% !important; /* elliptical, matches the box's own aspect ratio -- the original PNG had this baked into the image, we lost it when we replaced background-image with a flat gradient */
   border: 1px solid rgba(242,241,239,0.1) !important;
   box-shadow: 0 24px 60px rgba(0,0,0,0.5) !important;
 }
+.poker-table.felt-red {
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, #7A1C1F 0%, #571417 70%, #400e10 100%) !important;
+}
+.poker-table.felt-navy {
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, #1C3A5A 0%, #142940 70%, #0e1c2d 100%) !important;
+}
+
+/* ---- Table color swatches (settings modal) ---- */
+.table-color-swatches { display: flex; gap: 10px; }
+.table-swatch {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(242,241,239,0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: all 300ms var(--pp-ease);
+}
+.table-swatch:hover { transform: scale(1.12); }
+.table-swatch--active { border-color: var(--pp-ink); box-shadow: 0 0 0 2px rgba(242,241,239,0.25); }
+.table-swatch--green { background: var(--pp-felt); }
+.table-swatch--red { background: #7A1C1F; }
+.table-swatch--navy { background: #1C3A5A; }
+
+/* ---- Fold / Check / Raise: minimalist pill buttons, tactile feedback ---- */
+#foldBtn, #checkBtn, #raiseBtn {
+  border-radius: 9999px !important;
+  padding: 11px 26px !important;
+  transition: all 200ms ease-in-out !important;
+}
+#foldBtn:active, #checkBtn:active, #raiseBtn:active { transform: scale(0.95); }
+#foldBtn {
+  background: transparent !important;
+  color: #E88F92 !important;
+  border: 1.5px solid rgba(156,35,39,0.55) !important;
+}
+#foldBtn:hover { background: rgba(156,35,39,0.12) !important; }
+#checkBtn {
+  background: rgba(242,241,239,0.08) !important;
+  color: var(--pp-ink) !important;
+  border: 1.5px solid rgba(242,241,239,0.12) !important;
+}
+#checkBtn:hover { background: rgba(242,241,239,0.14) !important; }
+#raiseBtn {
+  background: linear-gradient(135deg, #ffcf6b, #e8a52e) !important;
+  color: #2a1d00 !important;
+  border: none !important;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(232,165,46,0.3) !important;
+}
+#raiseBtn:hover { filter: brightness(1.08); box-shadow: 0 8px 22px rgba(232,165,46,0.4) !important; }
+
+/* ---- iOS-style pill toggles (Auto check / Connection) ---- */
+#tableSettingsModal .bootstrap-switch {
+  border-radius: 9999px !important;
+  border: none !important;
+  background: rgba(242,241,239,0.10) !important;
+  box-shadow: none !important;
+}
+#tableSettingsModal .bootstrap-switch.bootstrap-switch-on {
+  background: var(--pp-blue) !important;
+}
+#tableSettingsModal .bootstrap-switch-handle-on,
+#tableSettingsModal .bootstrap-switch-handle-off {
+  background: transparent !important;
+  color: transparent !important;
+  border: none !important;
+}
+#tableSettingsModal .bootstrap-switch-label {
+  background: var(--pp-ink) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ---- Player seat glass: keep it light/translucent, not opaque black ---- */
 .card {
-  background: rgba(0,0,0,0.60) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(242,241,239,0.08) !important;
+  background: rgba(35,34,34,0.42) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(242,241,239,0.10) !important;
   border-radius: 14px !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.20) !important;
   transition: all 300ms var(--pp-ease);
 }
 .seatTexts { color: var(--pp-ink) !important; font-weight: 600; }

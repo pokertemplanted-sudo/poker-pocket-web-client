@@ -611,6 +611,7 @@ function statusUpdate(sData) {
     }
     myCallAmount = myData ? Math.max(0, highestBet - myData.totalBet) : 0;
   }
+  window.currentMyCallAmount = myCallAmount; // usado como piso legal por el panel de Aumentar
   room.toggleCheckAndCall(sData.isCallSituation, myCallAmount);
   for (i = 0; i < sData.playersData.length; i++) {
     var pMoney = sData.playersData[i].playerMoney;

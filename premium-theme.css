@@ -238,19 +238,20 @@
 /* ---- Poker table: keep the felt green, glass panels for seats ---- */
 .poker-table {
   background: radial-gradient(ellipse 70% 70% at 50% 50%, var(--pp-felt) 0%, #1e3d29 70%, #17301f 100%) !important;
+  border-radius: 50% / 50% !important; /* elliptical, matches the box's own aspect ratio -- the original PNG had this baked into the image, we lost it when we replaced background-image with a flat gradient */
   border: 1px solid rgba(242,241,239,0.1) !important;
   box-shadow: 0 24px 60px rgba(0,0,0,0.5) !important;
 }
 .card {
-  background: var(--pp-glass) !important;
+  background: rgba(0,0,0,0.60) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--pp-line) !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
+  border: 1px solid rgba(242,241,239,0.08) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25) !important;
   transition: all 300ms var(--pp-ease);
 }
-.seatTexts { color: var(--pp-ink) !important; font-weight: 500; }
+.seatTexts { color: var(--pp-ink) !important; font-weight: 600; }
 .totalPotText { color: var(--pp-ink) !important; font-weight: 700; }
 .minBetText { color: var(--pp-ink-faint) !important; font-weight: 400; }
 

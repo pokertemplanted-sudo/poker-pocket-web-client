@@ -42,6 +42,47 @@ function backToLobby() {
   getRooms(currentRoomFilter || 'all');
 }
 
+// ------------------------------------------------------------------------------
+// Escalado de la mesa en mobile.
+//
+// Los asientos, cartas y fichas dentro de #pokerTable están posicionados con
+// position:absolute y offsets en PIXELES FIJOS (margin-left:-210px, etc.),
+// calibrados para el ancho de diseño original de escritorio (~850px, el
+// mismo valor que ya usábamos en el fix de #tableView). En una pantalla mas
+// angosta esos mismos offsets quedan desproporcionados y todo se amontona.
+//
+// En vez de reescribir cada uno de esos offsets a mano (son decenas, uno
+// por asiento/ficha/dealer-chip), se escala #pokerTable completo como una
+// sola unidad con transform:scale() — todo lo que está adentro (posicionado
+// en forma absoluta relativa a #pokerTable) se reduce proporcionalmente
+// junto con él, sin romper el layout relativo entre asientos.
+var POKER_TABLE_DESIGN_WIDTH = 850; // mismo ancho de diseño que #tableView
+var POKER_TABLE_DESIGN_HEIGHT = 450; // altura fija real de .poker-table
+
+function scaleTableForViewport() {
+  var pokerTable = document.getElementById('pokerTable');
+  var tableView = document.getElementById('tableView');
+  if (!pokerTable || !tableView) {
+    return;
+  }
+  var availableWidth = tableView.clientWidth || window.innerWidth;
+  var scale = Math.min(1, availableWidth / POKER_TABLE_DESIGN_WIDTH);
+  pokerTable.style.transformOrigin = 'top center';
+  pokerTable.style.transform = 'scale(' + scale + ')';
+  // transform no cambia el espacio que el elemento reserva en el documento
+  // (sigue "ocupando" sus 450px de alto originales) — sin esto quedaría un
+  // hueco vacío enorme debajo de la mesa ya achicada.
+  pokerTable.style.marginBottom = (POKER_TABLE_DESIGN_HEIGHT * (scale - 1)) + 'px';
+}
+
+// Se recalcula al cargar, al rotar el teléfono y al cambiar el tamaño de
+// ventana — así landscape/portrait quedan siempre bien ajustados, sin
+// hardcodear un factor de escala fijo por breakpoint.
+window.addEventListener('resize', scaleTableForViewport);
+window.addEventListener('orientationchange', function () {
+  setTimeout(scaleTableForViewport, 50); // pequeño delay: iOS reporta innerWidth viejo por un instante tras rotar
+});
+
 
 // ------------------------------------------------------------------------------
 /* User buttons */

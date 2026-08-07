@@ -118,10 +118,23 @@
   text-align: center;
 }
 
+/* Sugerencia de rotar el teléfono: oculta por defecto (desktop), solo
+   aparece en portrait angosto — ver bloque mobile más abajo. */
+.rotate-suggestion {
+  display: none;
+}
+
 /* ------------------------------------------------------------------------
  * Mobile (<=768px)
  * ------------------------------------------------------------------------ */
 @media (max-width: 768px) {
+  /* Contención absoluta: nada puede generar scroll horizontal en mobile,
+     sin importar qué tan grandes queden los elementos de adentro. */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   /* #tableView tenía min-width/width: 850px hardcodeado en el HTML — eso
      era la causa real del layout roto en mobile (fuerza scroll horizontal
      y hace que todo se vea apilado/cortado). El !important es necesario
@@ -136,6 +149,26 @@
     margin-left: 0 !important;
     padding: 0 6px;
     box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  /* Sugerencia (no bloqueo) de rotar a landscape — solo en portrait
+     angosto, donde el escalado de la mesa (JS, ver scaleTableForViewport
+     en app.js) la deja más chica. En landscape hay más ancho disponible
+     y no hace falta molestar con esto. */
+  @media (orientation: portrait) {
+    .rotate-suggestion {
+      display: block;
+      text-align: center;
+      background: rgba(255, 225, 77, 0.12);
+      border: 1px solid rgba(255, 225, 77, 0.35);
+      color: #FFE14D;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
   }
 
   /* Lista de salas: se estaba recortando/no se veía porque no tenía scroll

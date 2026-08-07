@@ -28,6 +28,32 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <link href="app.css" rel="stylesheet">
     <link href="stake-theme.css" rel="stylesheet">
+    <link href="premium-theme.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN (utility classes only -- app.css/stake-theme.css/premium-theme.css
+         remain the source of truth for the game's core layout & the ids the JS relies on).
+         Config below extends the default palette with the premium theme's brand colors,
+         usable as e.g. bg-pp-bg, text-pp-ink, bg-pp-red, border-pp-line, etc. -->
+    <script>
+      tailwind = { config: {
+        theme: {
+          extend: {
+            colors: {
+              'pp-bg':    '#232222',
+              'pp-ink':   '#F2F1EF',
+              'pp-red':   '#9C2327',
+              'pp-blue':  '#223555',
+              'pp-felt':  '#2A5238',
+            },
+            fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          }
+        }
+      }};
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <script async src="https://analytics.nitramite.com/script.js" data-website-id="c16175b4-93df-47e1-9b69-9281be276972"></script>
 
 </head>
@@ -760,9 +786,9 @@
                  de abajo (openRaisePanel), igual que un poker real de dos pasos. -->
             <div class="row" id="mainActionRow" style="width: 100%">
                 <div class="col">
-                    <button onclick="foldBtnClick()" id="foldBtn" type="button" class="btn btn-danger">Fold</button>
-                    <button onclick="checkBtnClick()" id="checkBtn" type="button" class="btn btn-danger">Check</button>
-                    <button onclick="openRaisePanel()" id="raiseBtn" type="button" class="btn btn-danger">Raise</button>
+                    <button onclick="foldBtnClick()" id="foldBtn" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">Fold</button>
+                    <button onclick="checkBtnClick()" id="checkBtn" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">Check</button>
+                    <button onclick="openRaisePanel()" id="raiseBtn" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">Raise</button>
                 </div>
             </div>
 
@@ -770,30 +796,30 @@
                  de pot-fraction / chips / slider solo cargan tempBet (no mandan
                  nada) — el único que efectivamente manda la apuesta es
                  raiseConfirmBtn (raiseBtnClick), el "Aumentar" de la referencia. -->
-            <div id="raiseAmountPanel" class="view-hidden">
+            <div id="raiseAmountPanel" class="view-hidden transition-all duration-300 ease-in-out">
                 <div class="row pot-fraction-row" style="width: 100%; margin-bottom: 6px; margin-top: 6px">
                     <div class="col">
-                        <button onclick="potThirdClick()" id="potThirdBtn" type="button" class="btn btn-success pot-fraction-btn">1/3 Pot</button>
-                        <button onclick="potHalfClick()" id="potHalfBtn" type="button" class="btn btn-success pot-fraction-btn">1/2 Pot</button>
-                        <button onclick="potThreeQuarterClick()" id="potThreeQuarterBtn" type="button" class="btn btn-success pot-fraction-btn">3/4 Pot</button>
-                        <button onclick="potFullClick()" id="potFullBtn" type="button" class="btn btn-success pot-fraction-btn">Pot</button>
+                        <button onclick="potThirdClick()" id="potThirdBtn" type="button" class="btn btn-success pot-fraction-btn transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">1/3 Pot</button>
+                        <button onclick="potHalfClick()" id="potHalfBtn" type="button" class="btn btn-success pot-fraction-btn transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">1/2 Pot</button>
+                        <button onclick="potThreeQuarterClick()" id="potThreeQuarterBtn" type="button" class="btn btn-success pot-fraction-btn transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">3/4 Pot</button>
+                        <button onclick="potFullClick()" id="potFullBtn" type="button" class="btn btn-success pot-fraction-btn transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">Pot</button>
                     </div>
                 </div>
                 <div class="row" style="width: 100%">
                     <div class="col">
-                        <button onclick="betTenClick()" type="button" class="btn btn-danger">+10</button>
-                        <button onclick="betTwentyFiveClick()" type="button" class="btn btn-danger">+25</button>
-                        <button onclick="betOneHundredClick()" type="button" class="btn btn-danger">+100</button>
-                        <button onclick="betFiveHundredClick()" type="button" class="btn btn-danger">+500</button>
-                        <button onclick="betAllInClick()" type="button" class="btn btn-danger">All in</button>
+                        <button onclick="betTenClick()" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">+10</button>
+                        <button onclick="betTwentyFiveClick()" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">+25</button>
+                        <button onclick="betOneHundredClick()" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">+100</button>
+                        <button onclick="betFiveHundredClick()" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">+500</button>
+                        <button onclick="betAllInClick()" type="button" class="btn btn-danger transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">All in</button>
                     </div>
                     <div class="col" style="display: flex; align-items: center; gap: 8px;">
                         <!-- Slider vertical: mismo patrón que potFractionClick (clampea contra
                              el stack, solo carga tempBet). -->
-                        <input type="range" id="raiseSlider" class="raise-slider-vertical" min="0" max="100" value="0"
+                        <input type="range" id="raiseSlider" class="raise-slider-vertical transition-all duration-300 ease-in-out" min="0" max="100" value="0"
                                oninput="raiseSliderInput(this.value)">
                         <span id="raiseAmountLabel" class="raise-amount-label">0</span>
-                        <button onclick="raiseBtnClick()" id="raiseConfirmBtn" type="button" class="btn btn-warning">Aumentar</button>
+                        <button onclick="raiseBtnClick()" id="raiseConfirmBtn" type="button" class="btn btn-warning transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-95">Aumentar</button>
                     </div>
                 </div>
             </div>
